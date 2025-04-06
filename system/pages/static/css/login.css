@@ -1,0 +1,178 @@
+@media only screen and (min-width:900px) /*for desktop*/
+{
+    .content
+    {
+        width:25%;
+    }
+}
+
+@media only screen and (max-width:900px) /*for tablet and phone*/
+{
+    .content
+    {
+        width:50%;
+    }
+}
+
+
+*
+{
+    padding:0;
+    margin:0;
+}
+
+
+body
+{
+    width:100%;
+    min-height:100vh;
+    user-select:none;
+    background-color:seashell;
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+
+
+/* header */
+header
+{
+    background:linear-gradient(to right, #2c3e50, #34495e);
+    color:seashell;
+    text-align:center;
+    border-bottom:5px solid #27ae60;
+    padding:10px 10px;
+}
+
+.heading h1
+{
+    font-size:2.25rem;
+    font-weight:500;
+    text-transform:capitalize;
+    letter-spacing:2px;
+    text-shadow:2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin:10px;
+}
+
+
+
+/* nav */
+
+
+
+/* article*/
+article
+{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.content
+{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center; 
+    background-color:#f4f4f4;
+    border:2px solid #ccc;
+    border-radius:10px;
+    gap:20px;
+    padding:30px;
+    margin:30px;
+}
+
+.content h2
+{
+    color:black;
+    text-align:center;
+    font-size:1.75rem;
+    font-weight:400;
+}
+
+.content form
+{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+}
+
+.content input
+{
+    width:100%;
+    font-size:1rem;
+    border:1px solid #ccc;
+    border-radius:8px;
+    transition:border-color 0.3s, box-shadow 0.3s;
+    padding:10px;
+}
+
+.content input:focus
+{
+    border-color:#27ae60;
+    box-shadow:0 0 8px rgba(39, 174, 96, 0.2);
+    outline:none;
+}
+
+.content button
+{
+    width:50%;
+    font-size:1rem;
+    background-color:#27ae60;
+    color:seashell;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    transition:background-color 0.3s, transform 0.2s ease;
+    padding:10px 20px;
+}
+
+.content button:hover
+{
+    background-color:#1abc9c;
+    transform:scale(1.05);
+}
+
+.content button:active
+{
+    transform:scale(0.95);
+}
+
+.content span p
+{
+    text-align:center;
+    font-size:1rem;
+    color:black;
+}
+
+.content span a
+{
+    color:#27ae60;
+    text-decoration:none;
+}
+
+.content span a:hover
+{
+    text-decoration:underline;
+}
+
+
+
+/* footer */
+footer
+{
+    color:black;
+}
+
+.footer#top
+{
+    font-size:medium;
+}
+
+.footer#bottom
+{
+    text-align:center;
+    font-size:small;
+    font-style:italic;
+}

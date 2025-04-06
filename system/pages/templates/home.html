@@ -21,9 +21,9 @@
         </nav>
         <article>
             <div class="content">
-                <h2>Kullanıcı Yönlendirme Paneli</h2>
-                <a href="{% url 'signup' %}">Kayıt</a>
-                <a href="{% url 'login' %}">Giriş</a>
+                <h2>Giriş Yönlendirme Paneli</h2>
+                <a href="{% url 'login' %}?type=academic">Akademik Personel Girişi</a>
+                <a href="{% url 'login' %}?type=administrative">İdari Personel Girişi</a>
             </div>
         </article>
         <footer>

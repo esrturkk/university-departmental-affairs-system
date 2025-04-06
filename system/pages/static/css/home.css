@@ -78,7 +78,7 @@ article
     border-radius:10px;
     gap:20px;
     padding:30px;
-    margin:20px;
+    margin:30px;
 }
 
 .content h2
@@ -86,11 +86,12 @@ article
     color:black;
     font-size:1.75rem;
     font-weight:400;
+    text-align:center;
 }
 
 .content a
 {
-    width:25%;
+    width:50%;
     background-color:#27ae60;
     color:seashell;
     display:inline-block;
@@ -99,7 +100,6 @@ article
     border:none;
     border-radius:5px;
     cursor:pointer;
-    font-size:15px;
     transition:background-color 0.3s ease, transform 0.2s ease;
     padding:10px 20px;
 }

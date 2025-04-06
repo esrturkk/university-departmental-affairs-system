@@ -18,9 +18,10 @@ class Student(CustomUser):
 
 class Role(models.Model):
     title = models.CharField(max_length=50, verbose_name='İsim')
+    type = models.CharField(max_length=50, verbose_name='Tür')
 
     def __str__(self):
-        return f'{self.title}'
+        return f'{self.title}-{self.type}'
     
     class Meta:
         verbose_name = 'rol'

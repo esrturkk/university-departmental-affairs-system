@@ -23,9 +23,10 @@ class RoleAdmin(admin.ModelAdmin):
     list_display = [
         'id',
         'title',
+        'type',
         ]
     fieldsets = (
-        (None, {'fields': ('id', 'title',)}),)
+        (None, {'fields': ('id', 'title', 'type',)}),)
     readonly_fields = ('id',)
 
 admin.site.register(CustomUser, CustomUserAdmin)

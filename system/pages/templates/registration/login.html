@@ -12,13 +12,33 @@
     </head>
     <body id="body">
         <header>
-
+            <div class="heading">
+                <a href="{% url 'home' %}"><img id="logo" src="{% static 'media/kou.png' %}" width="150px" height="150px" title="logo" alt="logo"></a>
+                <h1>Üniversite Bölüm İşleri Sistemi</h1>
+            </div>
         </header>
         <nav>
-
         </nav>
         <article>
-
+            <div class="content">
+                <h2>{{ login_type }} Personel Girişi</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="text" name="username" placeholder="Personel ID" required>
+                    <input type="password" name="password" placeholder="Şifre" required>
+                    <button type="submit">Giriş</button>
+                </form>
+                <span>
+                    <p>Kayıtlı değil misiniz? <a href="{% url 'signup' %}">Kayıt</a></p>
+                </span>
+                {% if messages %}
+                    <span>
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </span>
+                {% endif %}
+            </div>
         </article>
         <footer>
             <div class="footer" id="top"></div>
