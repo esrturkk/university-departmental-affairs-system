@@ -5,16 +5,26 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     role = models.ForeignKey('Role', on_delete=models.CASCADE, null=True, verbose_name='Rol')
+
+    def __str__(self):
+        return f'{self.username} | {self.first_name} {self.last_name}'
     
-class Staff(CustomUser):
-    def __str__(self):
-        return f'{self.first_name} {self.last_name} {self.username}'
+    class Meta:
+        verbose_name = 'personel'
+        verbose_name_plural = 'personeller'
 
-class Student(CustomUser):
+class Student(models.Model):
     student_no = models.IntegerField(unique=True, verbose_name='Öğrenci No')
+    first_name = models.CharField(max_length=50, verbose_name='Ad')
+    last_name = models.CharField(max_length=50, verbose_name='Soyad')
+    email = models.EmailField(default='no-reply@example.com', verbose_name='E-posta')
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name} {self.student_no}'
+        return f'{self.student_no} | {self.first_name} {self.last_name}'
+    
+    class Meta:
+        verbose_name = 'öğrenci'
+        verbose_name_plural = 'öğrenciler'
 
 class Role(models.Model):
     title = models.CharField(max_length=50, verbose_name='İsim')

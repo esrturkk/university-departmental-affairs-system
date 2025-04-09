@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+    <head id="head">
+        <title>Gösterge Paneli - Üniversite Bölüm İşleri</title>
+        <meta charset="UTF-8">
+        <meta name="keywords" content="">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
+        <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" type="text/css">
+    </head>
+    <body id="body">
+        <header>
+            <div class="logo">
+                <a href="{% url 'dashboard' %}"><img id="logo" src="{% static 'media/kou.png' %}" width="75px" height="75px" title="logo" alt="logo"></a>
+            </div>
+            <div class="heading">
+                <h1>Üniversite Bölüm İşleri Sistemi</h1>
+                <h2>{{user.role.type}} Personel</h2>
+            </div>
+        </header>
+        <nav>
+            <div class="menu">
+                <ul>
+                    <li><a href="#">Dersler</a></li>
+                    <li><a href="#">Sınavlar</a></li>
+                    <li><a href="#">Derslikler</a></li>
+                    <li><a href="#">Çıkış</a></li>
+                </ul>
+            </div>
+        </nav>
+        <article>
+        </article>
+        <footer>
+            <div class="footer" id="top"></div>
+            <div class="footer" id="bottom">© 2025, Kocaeli Universitesi Yazılım Mühendisliği'ndeki birkaç öğrenci tarafından ❤️ ile tasarlanmıştır.</div>
+        </footer>
+    </body>
+</html>

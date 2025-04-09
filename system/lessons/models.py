@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import CustomUser
+
 # Create your models here.
 
 class Course(models.Model):
@@ -9,7 +10,7 @@ class Course(models.Model):
     course_level = models.IntegerField()
 
     def __str__(self):
-        return f"{self.course_name} ({self.course_code})"
+        return f'Ders: {self.course_name} | Kod: {self.course_code}'
 
     
 class Classroom(models.Model):
@@ -17,7 +18,7 @@ class Classroom(models.Model):
     classroom_capacity = models.IntegerField()
 
     def __str__(self):
-        return f"{self.classroom_name} (Capacity: {self.classroom_capacity})"
+        return f'Sınıf: {self.classroom_name} | Kapasite: {self.classroom_capacity}'
     
 
 
@@ -40,24 +41,24 @@ class CourseSchedule(models.Model):
     end_time = models.TimeField()
 
     def __str__(self):
-        return f"{self.course.course_name} on {self.get_day_of_week_display()} at {self.start_time}"
+        return f'Ders: {self.course.course_name} | Gün: {self.get_day_of_week_display()} | Saat: {self.start_time}'
 
 class ExamSchedule(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     exam_day = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-    note = models.TextField(blank=True, null=True)  # yorum alanı
+    note = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.course.course_name} Exam on {self.exam_day}"
+        return f'Ders: {self.course.course_name} | Gün: {self.exam_day}'
 
 class InvigilatorAssignment(models.Model):
     exam = models.ForeignKey(ExamSchedule, on_delete=models.CASCADE)
-    invigilator = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # öğretim üyesi veya bölüm başkanı
+    invigilator = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.invigilator.username} - {self.exam.course.course_name} Exam"
+        return f'Görevli: {self.invigilator.username} | Ders: {self.exam.course.course_name}'
 
 
 class ExamSeatingArrangement(models.Model):
@@ -67,7 +68,7 @@ class ExamSeatingArrangement(models.Model):
     seat_number = models.IntegerField()
 
     def __str__(self):
-        return f"Student {self.student_number} - Seat {self.seat_number} in {self.classroom.classroom_name}"
+        return f'Öğrenci: {self.student_number} | Sıra: {self.seat_number} | Sınıf: {self.classroom.classroom_name}'
 
 
 class InstructorSchedule(models.Model):
@@ -90,4 +91,4 @@ class InstructorSchedule(models.Model):
     end_time = models.TimeField()
 
     def __str__(self):
-        return f"{self.instructor.username} - {self.course.course_name} on {self.get_day_of_week_display()}"
+        return f'Görevli: {self.instructor.username} | Ders: {self.course.course_name} | Gün: {self.get_day_of_week_display()}'

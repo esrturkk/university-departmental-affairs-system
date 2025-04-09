@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'import_export',
     'accounts.apps.AccountsConfig',
+    'lessons.apps.LessonsConfig',
     'pages.apps.PagesConfig',
-    'lessons',
 ]
 
 MIDDLEWARE = [

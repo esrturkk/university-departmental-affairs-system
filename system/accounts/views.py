@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.contrib.auth import login
 
 # Create your views here.
 
@@ -41,6 +41,7 @@ class CustomLoginView(LoginView):
 
         if login_type_mapping.get(login_type) != role_type:
             messages.error(self.request, 'Giriş tipi ile rolünüz uyuşmuyor.')
-            return HttpResponseRedirect(self.request.path_info)
+            return self.form_invalid(form)
 
+        login(self.request, user)
         return super().form_valid(form)
