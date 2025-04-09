@@ -17,20 +17,55 @@
             </div>
             <div class="heading">
                 <h1>Üniversite Bölüm İşleri Sistemi</h1>
-                <h2>{{user.role.type}} Personel</h2>
+                <h2>{{user.role.type}} Personel - {{user.role.title}}</h2>
+            </div>
+            <div class="user">
+                <h1>{{user.first_name}} {{user.last_name}}</h1>
             </div>
         </header>
         <nav>
             <div class="menu">
                 <ul>
-                    <li><a href="#">Dersler</a></li>
+                    <li class="dropdown"><a href="#">Dersler</a>
+                        <ul class="dropdown-content">
+                            {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                                <li><a href="#">Ders Programlarını Oluştur</a></li>
+                                <li><a href="#">Ders Programlarını Görüntüle</a></li>
+                            {% elif user.role.title == 'Öğretim Elemanı' %}
+                                <li><a href="#">Ders Programı Oluştur</a></li>
+                                <li><a href="#">Ders Programı Görüntüle</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
                     <li><a href="#">Sınavlar</a></li>
                     <li><a href="#">Derslikler</a></li>
-                    <li><a href="#">Çıkış</a></li>
+                    {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                        <li class="dropdown"><a href="#">Personeller</a>
+                            <ul class="dropdown-content">
+                                <li><a href="#">Personel Ekle</a></li>
+                                <li><a href="#">Personelleri Görüntüle</a></li>
+                            </ul>
+                        </li>                
+                    {% elif user.role.title == 'Öğretim Elemanı' %}
+                        <li><a href="#">Personel</a>  
+                    {% endif %}
+                    <li><form action="{% url 'logout' %}" method="post">{% csrf_token %}
+                        <button type="submit">Çıkış</button>
+                    </form>
+                    </li>
                 </ul>
             </div>
         </nav>
         <article>
+            <section class="content">
+                <h3>Hoş Geldiniz, {{ user.first_name }}!</h3>
+                <p>Üniversite Bölüm İşleri Sistemine başarıyla giriş yaptınız. Buradan <span class="highlight">dersler, sınavlar, derslikler</span> ve <span class="highlight">personel işlemleri</span> gibi yönetim işlemlerinizi kolayca gerçekleştirebilirsiniz.</p>
+                <p>İhtiyacınız olan işlemi seçmek için menüdeki başlıkları kullanabilirsiniz.</p>
+            </section>
+            <section class="content">
+                <h3>Sistem Özellikleri</h3>
+                <p>Sistem, bölümünüzdeki tüm akademik ve idari işlemleri tek bir platformda toplar. <span class="highlight">Ders programlarını oluşturmak, sınav tarihlerini belirlemek</span> ve <span class="highlight">personel verilerini yönetmek</span> gibi işlemleri hızlıca yapabilirsiniz.</p>
+            </section>            
         </article>
         <footer>
             <div class="footer" id="top"></div>

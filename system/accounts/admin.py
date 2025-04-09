@@ -13,11 +13,9 @@ class CustomUserAdmin(ImportExportMixin, UserAdmin):
         'last_name',
         'role',
         'email',
-        'is_staff',
     ]
-
     fieldsets = UserAdmin.fieldsets + (('Görev bilgisi', {'fields': ('role',)}),)
-    add_fieldsets = UserAdmin.add_fieldsets + (('Görev bilgisi', {'fields': ('role',)}),)
+    add_fieldsets = UserAdmin.add_fieldsets + (('Kişisel bilgiler', {'fields': ('first_name', 'last_name', 'email')}), ('Görev bilgisi', {'fields': ('role',)}),)
 
 class StudentAdmin(admin.ModelAdmin):
     list_display = [
@@ -26,8 +24,7 @@ class StudentAdmin(admin.ModelAdmin):
         'last_name',
         'email',
         ]
-    fieldsets = (
-        ('Öğrenci bilgisi', {'fields': ('student_no', 'first_name', 'last_name', 'email',)}),)
+    fieldsets = ((None, {'fields': ('student_no',)}), ('Kişisel bilgiler', {'fields': ('first_name', 'last_name', 'email',)}),)
 
 class RoleAdmin(admin.ModelAdmin):
     list_display = [
@@ -35,8 +32,7 @@ class RoleAdmin(admin.ModelAdmin):
         'title',
         'type',
         ]
-    fieldsets = (
-        ('Rol bilgisi', {'fields': ('id', 'title', 'type',)}),)
+    fieldsets = ((None, {'fields': ('id', 'title', 'type',)}),)
     readonly_fields = ('id',)
 
 admin.site.register(CustomUser, CustomUserAdmin)

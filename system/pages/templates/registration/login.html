@@ -30,15 +30,11 @@
                     <input type="password" name="password" placeholder="Şifre" required>
                     <button type="submit">Giriş</button>
                 </form>
-                <span>
-                    <p>Kayıtlı değil misiniz? <a href="{% url 'signup' %}">Kayıt</a></p>
-                </span>
+                <p>Yönlendirmeye geri dönüş yapmak için yukarıdaki logoya tıklayınız.</p>
                 {% if messages %}
-                    <span>
-                        {% for message in messages %}
-                            <p>{{ message }}</p>
-                        {% endfor %}
-                    </span>
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
                 {% endif %}
             </div>
         </article>

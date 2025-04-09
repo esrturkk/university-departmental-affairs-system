@@ -141,22 +141,11 @@ article
     transform:scale(0.95);
 }
 
-.content span p
+.content p
 {
     text-align:center;
     font-size:1rem;
     color:black;
-}
-
-.content span a
-{
-    color:#27ae60;
-    text-decoration:none;
-}
-
-.content span a:hover
-{
-    text-decoration:underline;
 }
 
 
