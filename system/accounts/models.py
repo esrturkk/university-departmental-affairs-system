@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.urls import reverse
 
 # Create your models here.
 
@@ -8,6 +9,9 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f'{self.username} | {self.first_name} {self.last_name}'
+    
+    def get_absolute_url(self):
+        return reverse('staff_detail', kwargs={"pk": self.pk})
     
     class Meta:
         verbose_name = 'personel'

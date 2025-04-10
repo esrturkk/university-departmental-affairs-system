@@ -10,6 +10,12 @@
     {
         display:grid;
     }
+
+    .content
+    {
+        padding:20px;
+        margin:20px;
+    }
 }
 
 @media only screen and (max-width:900px) /*for tablet and phone*/
@@ -23,6 +29,12 @@
     .menu ul li a
     {
         display:block;
+    }
+
+    .content
+    {
+        padding:10px;
+        margin:10px;
     }
 }
 
@@ -171,39 +183,53 @@ header
 /* article */
 article
 {
-    background-color:#f5f5f5;
-    border-radius:10px;
-    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
-    padding:20px;
-    margin:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
 }
 
 .content
 {
-    margin-bottom:20px;
+    background-color:#fff;
+    border-radius:10px;
+    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.content h3
+.content h2
 {
-    color:#2c3e50;
-    font-size:1.75rem;
-    font-weight:500;
-    margin-bottom:10px;
-    text-transform:uppercase;
+    font-size:1.5rem;
+    font-weight:200;
+    text-align:center;
     letter-spacing:1px;
+    text-shadow:2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin:5px;
 }
 
-.content p
+.content form
 {
-    font-size:1rem;
-    color:#7f8c8d;
-    line-height:1.6;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
 }
 
-.content .highlight
+.content form input[type="submit"]
 {
-    color:#27ae60;
-    font-weight:bold;
+    width:100%;
+    background-color:#27ae60;
+    color:#fff;
+    font-size:1.1rem;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    transition:background-color 0.3s ease;
+    padding:12px 20px;
+}
+
+.content form input[type="submit"]:hover
+{
+    background-color:#2ecc71;
 }
 
 

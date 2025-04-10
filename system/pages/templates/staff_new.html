@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+    <head id="head">
+        <title>Personel Ekle - Üniversite Bölüm İşleri</title>
+        <meta charset="UTF-8">
+        <meta name="keywords" content="">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
+        <link rel="stylesheet" href="{% static 'css/staff_new.css' %}" type="text/css">
+    </head>
+    <body id="body">
+        <header>
+            <div class="logo">
+                <a href="{% url 'dashboard' %}"><img id="logo" src="{% static 'media/kou.png' %}" width="75px" height="75px" title="logo" alt="logo"></a>
+            </div>
+            <div class="heading">
+                <h1>Üniversite Bölüm İşleri Sistemi</h1>
+                <h2>{{user.role.type}} Personel - {{user.role.title}}</h2>
+            </div>
+            <div class="user">
+                <h1>{{user.first_name}} {{user.last_name}}</h1>
+            </div>
+        </header>
+        <nav>
+            <div class="menu">
+                <ul>
+                    <li><a href="{% url 'dashboard' %}">Gösterge Paneli</a></li>
+                    <li class="dropdown"><a href="#">Dersler</a>
+                        <ul class="dropdown-content">
+                            <li><a href="#">Ders Programlarını Oluştur</a></li>
+                            <li><a href="#">Ders Programlarını Görüntüle</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Sınavlar</a></li>
+                    <li><a href="#">Derslikler</a></li>
+                    <li class="dropdown"><a href="#">Personeller</a>
+                        <ul class="dropdown-content">
+                            <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>
+                            <li><a href="{% url 'staff' %}">Personelleri Görüntüle</a></li>
+                        </ul>
+                    </li>                 
+                    <li><form action="{% url 'logout' %}" method="post">{% csrf_token %}
+                        <button type="submit">Çıkış</button>
+                    </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <article>
+            <div class="content">
+                <h2>Personel Ekle</h2>
+                <form action="" method="post">{% csrf_token %}
+                    <table>
+                        {% for field in form %}
+                            <tr>
+                                <td><label for="{{ field.id_for_label }}">{{ field.label }}</label></td>
+                                <td>{{ field }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <input type="submit" value="Ekle">
+                </form>
+            </div>                                                        
+        </article>
+        <footer>
+            <div class="footer" id="top"></div>
+            <div class="footer" id="bottom">© 2025, Kocaeli Universitesi Yazılım Mühendisliği'ndeki birkaç öğrenci tarafından ❤️ ile tasarlanmıştır.</div>
+        </footer>
+    </body>
+</html>

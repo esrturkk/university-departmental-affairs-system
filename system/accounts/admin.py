@@ -18,6 +18,7 @@ class CustomUserAdmin(ImportExportMixin, UserAdmin):
     add_fieldsets = UserAdmin.add_fieldsets + (('Kişisel bilgiler', {'fields': ('first_name', 'last_name', 'email')}), ('Görev bilgisi', {'fields': ('role',)}),)
 
 class StudentAdmin(admin.ModelAdmin):
+    model = Student
     list_display = [
         'student_no',
         'first_name',
@@ -27,6 +28,7 @@ class StudentAdmin(admin.ModelAdmin):
     fieldsets = ((None, {'fields': ('student_no',)}), ('Kişisel bilgiler', {'fields': ('first_name', 'last_name', 'email',)}),)
 
 class RoleAdmin(admin.ModelAdmin):
+    model = Role
     list_display = [
         'id',
         'title',

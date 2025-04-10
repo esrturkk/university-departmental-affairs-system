@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
@@ -11,5 +12,5 @@ class HomePageView(TemplateView):
             return redirect('dashboard')
         return super().dispatch(request, *args, **kwargs)
 
-class DashboardPageView(TemplateView):
+class DashboardPageView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard.html'

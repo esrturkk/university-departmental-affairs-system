@@ -10,6 +10,18 @@
     {
         display:grid;
     }
+
+    .content
+    {
+        padding:20px;
+        margin:20px;
+    }
+
+    table th, table td
+    {
+        font-size:1rem;
+        padding:12px;
+    }
 }
 
 @media only screen and (max-width:900px) /*for tablet and phone*/
@@ -23,6 +35,23 @@
     .menu ul li a
     {
         display:block;
+    }
+
+    .content
+    {
+        padding:10px;
+        margin:10px;
+    }
+
+    table
+    {
+        display:block;
+    }
+
+    table th, table td
+    {
+        font-size:0.8rem;
+        padding:8px;
     }
 }
 
@@ -171,39 +200,61 @@ header
 /* article */
 article
 {
-    background-color:#f5f5f5;
-    border-radius:10px;
-    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
-    padding:20px;
-    margin:20px;
+    display:flex;
+    flex-direction:column;
 }
 
 .content
 {
-    margin-bottom:20px;
+    background-color:#fff;
+    border-radius:10px;
+    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.content h3
+.content h2
 {
-    color:#2c3e50;
-    font-size:1.75rem;
-    font-weight:500;
-    margin-bottom:10px;
-    text-transform:uppercase;
+    font-size:1.5rem;
+    font-weight:200;
+    text-align:center;
     letter-spacing:1px;
+    text-shadow:2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin:5px;
 }
 
-.content p
+table
 {
-    font-size:1rem;
-    color:#7f8c8d;
-    line-height:1.6;
+    width:100%;
+    overflow-x:auto;
+    border-collapse:collapse;
+    margin-top:20px;
 }
 
-.content .highlight
+table th, table td
 {
+    text-align:center;
+    border-bottom:1px solid #ddd;
+}
+
+table th
+{
+    background-color:#2c3e50;
+    color:#fff;
+}
+
+table td a
+{
+    background-color:#34495e;
     color:#27ae60;
-    font-weight:bold;
+    text-decoration:none;
+    border-radius:5px;
+    transition:background-color 0.3s ease;
+    padding:8px 16px;
+}
+
+table td a:hover
+{
+    background-color:#27ae60;
+    color:#fff;
 }
 
 
