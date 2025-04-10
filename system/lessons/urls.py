@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import generate_schedule
+from .views import scheduleGenerator
 
 urlpatterns = [
-    path("schedule/", generate_schedule, name="generate_schedule"),
+    path("schedule/generate/", scheduleGenerator, name="scheduleGenerator"),
 ]

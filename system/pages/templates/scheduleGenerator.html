@@ -1,0 +1,113 @@
+{% load static %}
+{% load schedule_extras %}
+<!DOCTYPE html>
+<html lang="tr">
+    <head id="head">
+        <title>Ders Programı Oluştur - Üniversite Bölüm İşleri</title>
+        <meta charset="UTF-8">
+        <meta name="keywords" content="">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
+        <link rel="stylesheet" href="{% static 'css/scheduleGenerator.css' %}" type="text/css">
+    </head>
+    <body id="body">
+        <header>
+            <div class="logo">
+                <a href="{% url 'dashboard' %}"><img id="logo" src="{% static 'media/kou.png' %}" width="75px" height="75px" title="logo" alt="logo"></a>
+            </div>
+            <div class="heading">
+                <h1>Üniversite Bölüm İşleri Sistemi</h1>
+                <h2>{{user.role.type}} Personel - {{user.role.title}}</h2>
+            </div>
+            <div class="user">
+                <h1>{{user.first_name}} {{user.last_name}}</h1>
+            </div>
+        </header>
+        <nav>
+            <div class="menu">
+                <ul>
+                    <li class="dropdown"><a href="#">Dersler</a>
+                        <ul class="dropdown-content">
+                            <li><a href="{% url 'scheduleGenerator' %}">Ders Programlarını Oluştur</a></li>
+                            <li><a href="#">Ders Programlarını Görüntüle</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Sınavlar</a></li>
+                    <li><a href="#">Derslikler</a></li>
+                    <li class="dropdown"><a href="#">Personeller</a>
+                        <ul class="dropdown-content">
+                            <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>
+                            <li><a href="{% url 'staff' %}">Personelleri Görüntüle</a></li>
+                        </ul>
+                    </li>                
+                    <li><form action="{% url 'logout' %}" method="post">{% csrf_token %}
+                        <button type="submit">Çıkış</button>
+                    </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <article>
+            <div class="content">
+                <h2>Bölüm Ders Programı</h2>
+                {% if error %}
+                    <p class="error">{{ error }}</p>
+                {% else %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Gün</th>
+                                <th rowspan="2">Saat</th>
+                                <th colspan="4">Sınıflar</th>
+                            </tr>
+                            <tr>
+                                <th>1. Sınıf</th>
+                                <th>2. Sınıf</th>
+                                <th>3. Sınıf</th>
+                                <th>4. Sınıf</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for day, day_label in day_names.items %}
+                                {% for slot in time_slots %}
+                                    <tr>
+                                        {% if forloop.first %}
+                                            <td id="day" rowspan="{{ time_slots|length }}">{{ day_label }}</td>
+                                        {% endif %}
+                                        <td id="hour">{{ slot }}</td>
+                                        {% for class in class_names %}
+                                            {% with day_data=schedule_table|dict_get:day %}
+                                                {% with slot_data=day_data|dict_get:slot %}
+                                                    {% with entry=slot_data|dict_get:class %}
+                                                        {% if entry %}
+                                                            <td id="entry">
+                                                                <span id="course">Ders: {{ entry.course }}</span>
+                                                                <span id="info">Derslik: {{ entry.classroom }}</span>
+                                                                <span id="info"><i>Öğr. Görv: {{ entry.instructor }}</i></span>
+                                                                <span id="info"><b>{{ entry.class }}. Sınıf</b></span>
+                                                            </td>
+                                                        {% else %}
+                                                            <td>-</td>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                {% endwith %}
+                                            {% endwith %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                <tr style="height: 15px;"><td colspan="6" style="background-color: #ffffff;"></td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </article>
+        <footer>
+            <footer>
+                <div class="footer" id="top"></div>
+                <div class="footer" id="bottom">© 2025, Kocaeli Universitesi Yazılım Mühendisliği'ndeki birkaç öğrenci tarafından ❤️ ile tasarlanmıştır.</div>
+            </footer>
+        </footer>
+    </body>
+</html>
