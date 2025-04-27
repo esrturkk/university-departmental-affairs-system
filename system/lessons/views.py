@@ -1,13 +1,44 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from accounts.models import CustomUser
-from lessons.models import Course, Classroom, CourseSchedule
+from .models import Course, Classroom, CourseSchedule
+from .forms import CourseForm
+from accounts.views import AuthorizationRequiredMixin
 from datetime import timedelta, datetime
-from django.shortcuts import redirect
 from functools import wraps
 import random
 
-DAYS = ['Pzt', 'Sal', 'Çrş', 'Prş', 'Cum']
+class CourseListView(AuthorizationRequiredMixin, ListView):
+    model = Course
+    template_name = 'courses.html'
+    context_object_name = 'courses'
 
+class CourseCreateView(AuthorizationRequiredMixin, CreateView):
+    model = Course
+    template_name = 'course_new.html'
+    context_object_name = 'courses'
+    form_class = CourseForm
+    
+    def get_success_url(self):
+        return reverse_lazy('courses')
+
+class CourseUpdateView(AuthorizationRequiredMixin, UpdateView):
+    model = Course
+    template_name = 'course_edit.html'
+    context_object_name = 'courses'
+    form_class = CourseForm
+
+    def get_success_url(self):
+        return reverse_lazy('courses')
+
+class CourseDeleteView(AuthorizationRequiredMixin, DeleteView):
+    model = Course
+    template_name = 'course_delete.html'
+    context_object_name = 'courses'
+    success_url = reverse_lazy('courses')
+
+DAYS = ['Pzt', 'Sal', 'Çrş', 'Prş', 'Cum']
 day_names = {
     'Pzt': 'Pazartesi',
     'Sal': 'Salı',
@@ -17,7 +48,6 @@ day_names = {
 }
 
 START_HOURS = [9, 11, 13, 15, 17]
-
 time_slots = [
     '08:00-08:50', '09:00-09:50', '10:00-10:50',
     '11:00-11:50', '12:00-12:50', '13:00-13:50',
@@ -25,83 +55,84 @@ time_slots = [
     '17:00-17:50'
 ]
 
+MIN_COURSES = 28
+MIN_INSTRUCTORS = 10
+MIN_CLASSROOMS = 7
+
 def role_required(allowed_roles):
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             user = request.user
-            if not user.is_authenticated:
+            if not user.is_authenticated or not hasattr(user, 'role') or user.role.title not in allowed_roles:
                 return redirect('home')
-            if hasattr(user, 'role') and user.role and user.role.title in allowed_roles:
-                return view_func(request, *args, **kwargs)
-            return redirect('home')
+            return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
 
 @role_required(['Bölüm Başkanı', 'Bölüm Sekreteri'])
-def scheduleGenerator(request):
-    CourseSchedule.objects.all().delete()
+def courseScheduleGenerator(request):
+    if request.method == 'POST':
+        CourseSchedule.objects.all().delete()
 
-    all_courses = list(Course.objects.all()[:28])
-    instructors = list(CustomUser.objects.filter(role__title__in=['Öğretim Elemanı', 'Bölüm Başkanı'])[:10])
-    classrooms = list(Classroom.objects.all())
+        courses = list(Course.objects.all())
+        instructors = list(CustomUser.objects.filter(role__title__in=['Öğretim Elemanı', 'Bölüm Başkanı']))
+        classrooms = list(Classroom.objects.all())
 
-    if len(all_courses) < 28 or len(instructors) < 10 or len(classrooms) < 7:
-        return render(request, 'scheduleGenerator.html', {'error': 'Yeterli sayıda ders, öğretim elemanı veya sınıf bulunamadı.'})
+        if len(courses) < MIN_COURSES or len(instructors) < MIN_INSTRUCTORS or len(classrooms) < MIN_CLASSROOMS:
+            return render(request, 'scheduleGenerator.html', {'error': 'Yeterli sayıda ders, öğretim elemanı veya derslik bulunamadı.'})
+
+        used_slots = set()
+
+        for course_idx, course in enumerate(courses):
+            instructor = instructors[course_idx % len(instructors)]
+            classroom = classrooms[course_idx % len(classrooms)]
+
+            slot_found = False
+            for day in random.sample(DAYS, len(DAYS)):
+                for hour in START_HOURS:
+                    if (day, hour, instructor.id) in used_slots: continue
+                    if (day, hour, classroom.id) in used_slots: continue
+
+                    start_time = datetime.strptime(f'{hour}:00', '%H:%M')
+                    slot_end = start_time + timedelta(minutes=50)
+
+                    CourseSchedule.objects.create(
+                        course=course,
+                        classroom=classroom,
+                        instructor=instructor,
+                        day_of_week=day,
+                        start_time=start_time.time(),
+                        end_time=slot_end.time(),
+                    )
+
+                    used_slots.add((day, hour, instructor.id))
+                    used_slots.add((day, hour, classroom.id))
+
+                    slot_found = True
+                    break
+                if slot_found:
+                    break
+    
+        return redirect('courseScheduleGenerator')
+
+
+    schedules = CourseSchedule.objects.all()
 
     schedule = []
-    used_slots = set()
-    course_idx = 0
-    class_numbers = [1, 2, 3, 4]
-
-    for class_index, class_no in enumerate(class_numbers):
-        for i in range(7):
-            if course_idx < len(all_courses):
-                course = all_courses[course_idx]
-                instructor = instructors[course_idx % len(instructors)]
-                classroom = classrooms[(course_idx + class_index) % len(classrooms)]
-
-                slot_found = False
-                for day in random.sample(DAYS, len(DAYS)):
-                    for hour in START_HOURS:
-                        if (day, hour, instructor.id) in used_slots: continue
-                        if (day, hour, classroom.id) in used_slots: continue
-                        if (day, hour, class_index) in used_slots: continue
-
-                        start_time = datetime.strptime(f'{hour}:00', '%H:%M')
-                        slot_end = start_time + timedelta(minutes=50)
-                        slot = f'{start_time.strftime("%H:%M")}-{slot_end.strftime("%H:%M")}'
-
-                        CourseSchedule.objects.create(
-                            course=course,
-                            classroom=classroom,
-                            instructor=instructor,
-                            day_of_week=day,
-                            start_time=start_time.time(),
-                            end_time=slot_end.time(),
-                        )
-
-                        schedule.append({
-                            'class': class_no,
-                            'day': day,
-                            'slot': slot,
-                            'course': course.course_name,
-                            'instructor': instructor.get_full_name(),
-                            'classroom': classroom.classroom_name,
-                        })
-
-                        used_slots.add((day, hour, instructor.id))
-                        used_slots.add((day, hour, classroom.id))
-                        used_slots.add((day, hour, class_index))
-
-                        slot_found = True
-                        break
-                    if slot_found:
-                        break
-
-                course_idx += 1
+    for sc in schedules:
+        schedule.append({
+            'class': sc.course.course_level,
+            'day': sc.day_of_week,
+            'slot': f'{sc.start_time.strftime('%H:%M')}-{sc.end_time.strftime('%H:%M')}',
+            'course': sc.course.course_name,
+            'instructor': sc.instructor.get_full_name() if sc.instructor else 'N/A',
+            'classroom': sc.classroom.classroom_name if sc.classroom else 'N/A',
+        })
 
     schedule_table = {}
+    class_numbers = [1, 2, 3, 4]
+
     for day in DAYS:
         schedule_table[day] = {}
         for slot in time_slots:
@@ -113,10 +144,13 @@ def scheduleGenerator(request):
         class_no = item['class']
         schedule_table[day][slot][class_no] = item
 
-    return render(request, 'scheduleGenerator.html', {
+    return render(request, 'courseScheduleGenerator.html', {
         'schedule_table': schedule_table,
         'schedule': schedule,
         'time_slots': time_slots,
         'class_names': class_numbers,
         'day_names': day_names
     })
+
+def courseScheduleViewer(request):
+    pass

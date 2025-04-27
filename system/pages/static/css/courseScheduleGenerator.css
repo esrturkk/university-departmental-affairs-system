@@ -1,0 +1,307 @@
+@media only screen and (min-width:900px) /*for desktop*/
+{
+    .menu ul
+    {
+        flex-direction:row;
+        gap:20px;
+    }
+
+    .menu ul li a
+    {
+        display:grid;
+    }
+}
+
+@media only screen and (max-width:900px) /*for tablet and phone*/
+{
+    .menu ul
+    {
+        flex-direction:column;
+        gap:5px;
+    }
+
+    .menu ul li a
+    {
+        display:block;
+    }
+
+    .content
+    {
+        overflow-x:auto;
+    }
+}
+
+
+*
+{
+    padding:0;
+    margin:0;
+}
+
+
+body
+{
+    width:100%;
+    min-height:100vh;
+    user-select:none;
+    background-color:seashell;
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+
+
+/* header */
+header
+{
+    background:linear-gradient(to right, #2c3e50, #34495e);
+    color:seashell;
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    border-bottom:5px solid #27ae60;
+    padding:10px 10px;
+}
+
+.heading h1, .user h1
+{
+    font-size:1.5rem;
+    font-weight:200;
+    text-transform:capitalize;
+    letter-spacing:1px;
+    text-shadow:2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin:5px;
+}
+
+.heading h2
+{
+    font-size:1.25rem;
+    font-weight:100;
+    font-style:italic;
+    text-transform:capitalize;
+    text-shadow:2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin:5px;
+}
+
+
+
+/* nav */
+.menu
+{
+    background-color:#2c3e50;
+    border-bottom:2px solid #27ae60;
+}
+
+.menu ul
+{
+    list-style:none;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:10px;
+}
+
+.menu ul li a
+{
+    color:seashell;
+    text-decoration:none;
+    font-weight:400;
+    font-size:1rem;
+    transition:all 0.3s ease;
+    padding:6px 12px;
+}
+
+.menu ul li a:hover
+{
+    background-color:#27ae60;
+    color:seashell;
+    border-radius:10px;
+}
+
+.menu ul li.dropdown
+{
+    position:relative;
+}
+
+.menu ul li.dropdown .dropdown-content
+{
+    background-color:#34495e;
+    display:none;
+    position:absolute;
+    top:100%;
+    left:0;
+    border-radius:10px;
+    box-shadow:0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index:1000;
+    padding:10px;
+}
+
+.menu ul li.dropdown:hover .dropdown-content
+{
+    display:block;
+}
+
+.menu ul li .dropdown-content a
+{
+    color:seashell;
+    text-decoration:none;
+    display:block;
+    transition:background-color 0.3s ease;
+    padding:8px 12px;
+}
+
+.menu ul li form button
+{
+    background-color:transparent;
+    color:seashell;
+    display:inline-block;
+    font-size:1rem;
+    font-weight:400;
+    text-align:center;
+    text-decoration:none;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    padding:6px 12px;
+}
+
+.menu ul li form button:hover
+{
+    background-color:#27ae60;
+    color:seashell;
+}
+
+
+
+/* article */
+article
+{
+    background-color:#f5f5f5;
+    border-radius:10px;
+    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
+    padding:20px;
+    margin:20px;
+}
+
+.content
+{
+    background-color:#fff;
+    border-radius:10px;
+    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
+    padding:10px 10px;
+}
+
+.content h2
+{
+    font-size:1.5rem;
+    font-weight:200;
+    text-align:center;
+    letter-spacing:1px;
+    text-shadow:2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin:5px;
+}
+
+.content .error
+{
+    color:red;
+    text-align:center;
+    font-size:1.1rem;
+    margin-top:10px;
+}
+
+.content table
+{
+    width:100%;
+    border-collapse:collapse;
+    box-shadow:0 2px 8px rgba(0, 0, 0, 0.1);
+    table-layout:fixed;
+    margin-top:20px;
+    min-width: 700px; /* veya 600px/800px içeriğe göre değişebilir */
+}
+
+.content table th, .content table td
+{
+    background-color:#f9fafb;
+    font-size:0.9rem;
+    text-align:center;
+    border:1px solid #ddd;
+    padding:12px;
+}
+
+.content table th
+{
+    background-color:#27ae60;
+    color:white;
+}
+
+.content #entry
+{
+    color:#2c3e50;
+    font-weight:bold;
+}
+
+.content span
+{
+    display:block;
+    margin-bottom:5px;
+}
+
+.content span
+{
+    color:#7f8c8d;
+    font-size:0.9rem;
+}
+
+.content form
+{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    padding:10px;
+    margin:5px;
+}
+
+.content form button
+{
+    background-color:#27ae60;
+    color:seashell;
+    text-align:center;
+    text-decoration:none;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    transition:background-color 0.3s ease, transform 0.2s ease;
+    padding:10px;
+    margin:5px;
+}
+
+.content form button:hover
+{
+    background-color:#1abc9c;
+    transform:scale(1.05);
+}
+
+.content form button:active
+{
+    transform:scale(0.95);
+}
+
+
+
+/* footer */
+footer
+{
+    color:black;
+}
+
+.footer#top
+{
+    font-size:medium;
+}
+
+.footer#bottom
+{
+    text-align:center;
+    font-size:small;
+    font-style:italic;
+}

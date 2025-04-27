@@ -10,6 +10,18 @@
     {
         display:grid;
     }
+
+    .content
+    {
+        padding:20px;
+        margin:20px;
+    }
+
+    table th, table td
+    {
+        font-size:1rem;
+        padding:12px;
+    }
 }
 
 @media only screen and (max-width:900px) /*for tablet and phone*/
@@ -27,7 +39,19 @@
 
     .content
     {
-        overflow-x:auto;
+        padding:10px;
+        margin:10px;
+    }
+
+    table
+    {
+        display:block;
+    }
+
+    table th, table td
+    {
+        font-size:0.8rem;
+        padding:8px;
     }
 }
 
@@ -176,11 +200,8 @@ header
 /* article */
 article
 {
-    background-color:#f5f5f5;
-    border-radius:10px;
-    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
-    padding:20px;
-    margin:20px;
+    display:flex;
+    flex-direction:column;
 }
 
 .content
@@ -188,7 +209,6 @@ article
     background-color:#fff;
     border-radius:10px;
     box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
-    padding:10px 10px;
 }
 
 .content h2
@@ -201,55 +221,40 @@ article
     margin:5px;
 }
 
-.content .error
-{
-    color:red;
-    text-align:center;
-    font-size:1.1rem;
-    margin-top:10px;
-}
-
-.content table
+table
 {
     width:100%;
+    overflow-x:auto;
     border-collapse:collapse;
-    box-shadow:0 2px 8px rgba(0, 0, 0, 0.1);
-    table-layout:fixed;
     margin-top:20px;
-    min-width: 700px; /* veya 600px/800px içeriğe göre değişebilir */
 }
 
-.content table th, .content table td
+table th, table td
 {
-    background-color:#f9fafb;
-    font-size:0.9rem;
     text-align:center;
-    border:1px solid #ddd;
-    padding:12px;
+    border-bottom:1px solid #ddd;
 }
 
-.content table th
+table th
+{
+    background-color:#2c3e50;
+    color:#fff;
+}
+
+table td a
+{
+    background-color:#34495e;
+    color:#27ae60;
+    text-decoration:none;
+    border-radius:5px;
+    transition:background-color 0.3s ease;
+    padding:8px 16px;
+}
+
+table td a:hover
 {
     background-color:#27ae60;
-    color:white;
-}
-
-.content #entry
-{
-    color:#2c3e50;
-    font-weight:bold;
-}
-
-.content span
-{
-    display:block;
-    margin-bottom:5px;
-}
-
-.content span
-{
-    color:#7f8c8d;
-    font-size:0.9rem;
+    color:#fff;
 }
 
 

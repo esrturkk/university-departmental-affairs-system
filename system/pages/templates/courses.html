@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 <html lang="tr">
     <head id="head">
-        <title>Personeli Düzenle - Üniversite Bölüm İşleri</title>
+        <title>Dersler - Üniversite Bölüm İşleri</title>
         <meta charset="UTF-8">
         <meta name="keywords" content="">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
-        <link rel="stylesheet" href="{% static 'css/staff_edit.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/courses.css' %}" type="text/css">
     </head>
     <body id="body">
         <header>
@@ -41,7 +41,7 @@
                             <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>
                             <li><a href="{% url 'staff' %}">Personelleri Görüntüle</a></li>
                         </ul>
-                    </li>                 
+                    </li>                
                     <li><form action="{% url 'logout' %}" method="post">{% csrf_token %}
                         <button type="submit">Çıkış</button>
                     </form>
@@ -51,18 +51,32 @@
         </nav>
         <article>
             <div class="content">
-                <h2>Personeli Düzenle</h2>
-                <form action="" method="post">{% csrf_token %}
-                    <table>
-                        {% for field in form %}
+                <h2>Ders Listesi</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ad</th>
+                            <th>Kod</th>
+                            <th>Kredi</th>
+                            <th>Seviye</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
                             <tr>
-                                <td><label for="{{ field.id_for_label }}">{{ field.label }}</label></td>
-                                <td>{{ field }}</td>
+                                <td>{{ course.course_name }}</td>
+                                <td>{{ course.course_code }}</td>
+                                <td>{{ course.course_credit }}</td>
+                                <td>{{ course.course_level }}</td>
+                                <td>
+                                    <a href="{% url 'course_edit' course.pk %}">Düzenle</a>
+                                    <a href="{% url 'course_delete' course.pk %}">Sil</a>
+                                </td>
                             </tr>
                         {% endfor %}
-                    </table>
-                    <input type="submit" value="Güncelle">
-                </form>
+                    </tbody>
+                </table>
             </div>                                                        
         </article>
         <footer>

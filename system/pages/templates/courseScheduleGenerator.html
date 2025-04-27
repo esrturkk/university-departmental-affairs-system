@@ -9,7 +9,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
-        <link rel="stylesheet" href="{% static 'css/scheduleGenerator.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/courseScheduleGenerator.css' %}" type="text/css">
     </head>
     <body id="body">
         <header>
@@ -27,10 +27,12 @@
         <nav>
             <div class="menu">
                 <ul>
+                    <li><a href="{% url 'dashboard' %}">Gösterge Paneli</a></li>
                     <li class="dropdown"><a href="#">Dersler</a>
                         <ul class="dropdown-content">
-                            <li><a href="{% url 'scheduleGenerator' %}">Ders Programlarını Oluştur</a></li>
-                            <li><a href="#">Ders Programlarını Görüntüle</a></li>
+                            <li><a href="{% url 'course_new' %}">Ders Ekle</a></li>
+                            <li><a href="{% url 'courses' %}">Ders Listesi</a></li>
+                            <li><a href="{% url 'courseScheduleGenerator' %}">Ders Programı Oluştur</a></li>
                         </ul>
                     </li>
                     <li><a href="#">Sınavlar</a></li>
@@ -85,7 +87,6 @@
                                                                 <span id="course">Ders: {{ entry.course }}</span>
                                                                 <span id="info">Derslik: {{ entry.classroom }}</span>
                                                                 <span id="info"><i>Öğr. Görv: {{ entry.instructor }}</i></span>
-                                                                <span id="info"><b>{{ entry.class }}. Sınıf</b></span>
                                                             </td>
                                                         {% else %}
                                                             <td>-</td>
@@ -101,6 +102,10 @@
                         </tbody>
                     </table>
                 {% endif %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit">Yeni Ders Programı Oluştur</button>
+                </form>                
             </div>
         </article>
         <footer>
