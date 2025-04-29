@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 <html lang="tr">
     <head id="head">
-        <title>Gösterge Paneli - Üniversite Bölüm İşleri</title>
+        <title>Öğrenci Detayı - Üniversite Bölüm İşleri</title>
         <meta charset="UTF-8">
         <meta name="keywords" content="">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
-        <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/detail.css' %}" type="text/css">
     </head>
     <body id="body">
         <header>
@@ -72,15 +72,13 @@
             </div>
         </nav>
         <article>
-            <section class="content">
-                <h3>Hoş Geldiniz, {{ user.first_name }}!</h3>
-                <p>Üniversite Bölüm İşleri Sistemine başarıyla giriş yaptınız. Buradan <span class="highlight">dersler, sınavlar, derslikler</span> ve <span class="highlight">personel işlemleri</span> gibi yönetim işlemlerinizi kolayca gerçekleştirebilirsiniz.</p>
-                <p>İhtiyacınız olan işlemi seçmek için menüdeki başlıkları kullanabilirsiniz.</p>
-            </section>
-            <section class="content">
-                <h3>Sistem Özellikleri</h3>
-                <p>Sistem, bölümünüzdeki tüm akademik ve idari işlemleri tek bir platformda toplar. <span class="highlight">Ders programlarını oluşturmak, sınav tarihlerini belirlemek</span> ve <span class="highlight">personel verilerini yönetmek</span> gibi işlemleri hızlıca yapabilirsiniz.</p>
-            </section>            
+            <div class="content">
+                <h2>{{ student.student_no }} Numaralı Öğrenci Bilgileri</h2>
+                <p><strong>Öğrenci No:</strong> {{ student.student_no }}</p>
+                <p><strong>Adı:</strong> {{ student.first_name }}</p>
+                <p><strong>Soyadı:</strong> {{ student.last_name }}</p>
+                <p><strong>E-posta:</strong> {{ student.email }}</p>
+            </div>
         </article>
         <footer>
             <div class="footer" id="top"></div>

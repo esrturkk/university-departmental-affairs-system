@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="tr">
     <head id="head">
-        <title>Personeller - Üniversite Bölüm İşleri</title>
+        <title>Öğrenciler - Üniversite Bölüm İşleri</title>
         <meta charset="UTF-8">
         <meta name="keywords" content="">
         <meta name="description" content="">
@@ -36,16 +36,28 @@
                     </li>
                     <li><a href="#">Sınavlar</a></li>
                     <li><a href="#">Derslikler</a></li>
-                    <li class="dropdown"><a href="#">Personeller</a>
-                        <ul class="dropdown-content">
-                            <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>
-                            <li><a href="{% url 'staff' %}">Personel Listesi</a></li>
-                        </ul>
-                    </li>
+                    {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                        <li class="dropdown"><a href="#">Personeller</a>
+                            <ul class="dropdown-content">
+                                <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>
+                                <li><a href="{% url 'staff' %}">Personel Listesi</a></li>
+                            </ul>
+                        </li>                
+                    {% elif user.role.title == 'Öğretim Elemanı' %}
+                        <li class="dropdown"><a href="#">Personel</a>
+                            <ul class="dropdown-content">
+                                <li><a href="{% url 'staff_detail' pk=request.user.pk %}">Personel Bilgisi</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
                     <li class="dropdown"><a href="#">Öğrenciler</a>
                         <ul class="dropdown-content">
-                            <li><a href="{% url 'student_new' %}">Öğrenci Ekle</a></li>
-                            <li><a href="{% url 'students' %}">Öğrenci Listesi</a></li>
+                            {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                                <li><a href="{% url 'student_new' %}">Öğrenci Ekle</a></li>
+                                <li><a href="{% url 'students' %}">Öğrenci Listesi</a></li>
+                            {% elif user.role.title == 'Öğretim Elemanı' %}
+                                <li><a href="{% url 'students' %}">Öğrenci Listesi</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li><form action="{% url 'logout' %}" method="post">{% csrf_token %}
@@ -57,29 +69,27 @@
         </nav>
         <article>
             <div class="content">
-                <h2>Personel Listesi</h2>
+                <h2>Öğrenci Listesi</h2>
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No</th>
                             <th>Ad</th>
                             <th>Soyad</th>
-                            <th>Görev</th>
                             <th>İşlemler</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for staff in staff %}
+                        {% for student in students %}
                             <tr>
-                                <td>{{ staff.username }}</td>
-                                <td>{{ staff.first_name }}</td>
-                                <td>{{ staff.last_name }}</td>
-                                <td>{{ staff.role.title }}</td>
+                                <td>{{ student.student_no }}</td>
+                                <td>{{ student.first_name }}</td>
+                                <td>{{ student.last_name }}</td>
                                 <td>
-                                    <a href="{% url 'staff_detail' staff.pk %}">Görüntüle</a>
-                                    <a href="{% url 'staff_edit' staff.pk %}">Düzenle</a>
-                                    {% if request.user.role.title == 'Bölüm Başkanı' %}
-                                        <a href="{% url 'staff_delete' staff.pk %}">Sil</a>
+                                    <a href="{% url 'student_detail' student.pk %}">Görüntüle</a>
+                                    {% if request.user.role.title == 'Bölüm Başkanı' or  request.user.role.title == 'Bölüm Sekreteri' %}
+                                        <a href="{% url 'student_edit' student.pk %}">Düzenle</a>
+                                        <a href="{% url 'student_delete' student.pk %}">Sil</a>
                                     {% endif %}
                                 </td>
                             </tr>

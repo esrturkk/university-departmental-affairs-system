@@ -17,7 +17,7 @@ class CourseListView(AuthorizationRequiredMixin, ListView):
 class CourseCreateView(AuthorizationRequiredMixin, CreateView):
     model = Course
     template_name = 'course_new.html'
-    context_object_name = 'courses'
+    context_object_name = 'course'
     form_class = CourseForm
     
     def get_success_url(self):
@@ -26,7 +26,7 @@ class CourseCreateView(AuthorizationRequiredMixin, CreateView):
 class CourseUpdateView(AuthorizationRequiredMixin, UpdateView):
     model = Course
     template_name = 'course_edit.html'
-    context_object_name = 'courses'
+    context_object_name = 'course'
     form_class = CourseForm
 
     def get_success_url(self):
@@ -35,7 +35,7 @@ class CourseUpdateView(AuthorizationRequiredMixin, UpdateView):
 class CourseDeleteView(AuthorizationRequiredMixin, DeleteView):
     model = Course
     template_name = 'course_delete.html'
-    context_object_name = 'courses'
+    context_object_name = 'course'
     success_url = reverse_lazy('courses')
 
 DAYS = ['Pzt', 'Sal', 'Çrş', 'Prş', 'Cum']
@@ -80,7 +80,7 @@ def courseScheduleGenerator(request):
         classrooms = list(Classroom.objects.all())
 
         if len(courses) < MIN_COURSES or len(instructors) < MIN_INSTRUCTORS or len(classrooms) < MIN_CLASSROOMS:
-            return render(request, 'scheduleGenerator.html', {'error': 'Yeterli sayıda ders, öğretim elemanı veya derslik bulunamadı.'})
+            return render(request, 'courseScheduleGenerator.html', {'error': 'Yeterli sayıda ders, öğretim elemanı veya derslik bulunamadı.'})
 
         used_slots = set()
 

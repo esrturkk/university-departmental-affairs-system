@@ -4,8 +4,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.contrib.auth import login
-from .models import CustomUser, Role
-from .forms import StaffForm
+from .models import CustomUser, Role, Student
+from .forms import StaffForm, StudentForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.hashers import make_password
 
@@ -71,17 +71,17 @@ class AuthorizationRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 class StaffListView(AuthorizationRequiredMixin, ListView):
     model = CustomUser
     template_name = 'staff.html'
-    context_object_name = 'users'
+    context_object_name = 'staff'
 
-class StaffDetailView(DetailView):
+class StaffDetailView(LoginRequiredMixin, DetailView):
     model = CustomUser
     template_name = 'staff_detail.html'
-    context_object_name = 'user'
+    context_object_name = 'staff'
 
 class StaffCreateView(AuthorizationRequiredMixin, CreateView):
     model = CustomUser
     template_name = 'staff_new.html'
-    context_object_name = 'users'
+    context_object_name = 'staff'
     form_class = StaffForm
 
     def get_form(self, form_class=None):
@@ -104,7 +104,7 @@ class StaffCreateView(AuthorizationRequiredMixin, CreateView):
 class StaffUpdateView(AuthorizationRequiredMixin, UpdateView):
     model = CustomUser
     template_name = 'staff_edit.html'
-    context_object_name = 'users'
+    context_object_name = 'staff'
     form_class = StaffForm
 
     def get_form(self, form_class=None):
@@ -126,14 +126,39 @@ class StaffUpdateView(AuthorizationRequiredMixin, UpdateView):
 class StaffDeleteView(AuthorizationRequiredMixin, DeleteView):
     model = CustomUser
     template_name = 'staff_delete.html'
-    context_object_name = 'users'
+    context_object_name = 'staff'
     success_url = reverse_lazy('staff')
+    
+class StudentListView(LoginRequiredMixin, ListView):
+    model = Student
+    template_name = 'students.html'
+    context_object_name = 'students'
 
-    def dispatch(self, request, *args, **kwargs):
-        if not self.test_func():
-            return self.handle_no_permission()
+class StudentDetailView(LoginRequiredMixin, DetailView):
+    model = Student
+    template_name = 'student_detail.html'
+    context_object_name = 'student'
 
-        if request.user.role.title != 'Bölüm Başkanı':
-            return redirect('dashboard')
+class StudentCreateView(AuthorizationRequiredMixin, CreateView):
+    model = Student
+    template_name = 'student_new.html'
+    context_object_name = 'student'
+    form_class = StudentForm
+    
+    def get_success_url(self):
+        return reverse_lazy('students')
 
-        return super().dispatch(request, *args, **kwargs)
+class StudentUpdateView(AuthorizationRequiredMixin, UpdateView):
+    model = Student
+    template_name = 'student_edit.html'
+    context_object_name = 'student'
+    form_class = StudentForm
+
+    def get_success_url(self):
+        return reverse_lazy('students')
+
+class StudentDeleteView(AuthorizationRequiredMixin, DeleteView):
+    model = Student
+    template_name = 'student_delete.html'
+    context_object_name = 'student'
+    success_url = reverse_lazy('students')

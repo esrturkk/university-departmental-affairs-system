@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 <html lang="tr">
     <head id="head">
-        <title>Personeli Düzenle - Üniversite Bölüm İşleri</title>
+        <title>Öğrenciyi Sil - Üniversite Bölüm İşleri</title>
         <meta charset="UTF-8">
         <meta name="keywords" content="">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
-        <link rel="stylesheet" href="{% static 'css/edit.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/delete.css' %}" type="text/css">
     </head>
     <body id="body">
         <header>
@@ -57,17 +57,10 @@
         </nav>
         <article>
             <div class="content">
-                <h2>Personeli Düzenle</h2>
+                <h2>Öğrenciyi Sil</h2>
                 <form action="" method="post">{% csrf_token %}
-                    <table>
-                        {% for field in form %}
-                            <tr>
-                                <td><label for="{{ field.id_for_label }}">{{ field.label }}</label></td>
-                                <td>{{ field }}</td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                    <input type="submit" value="Güncelle">
+                    <p>Bu öğrenciyi silmek için emin misin "{{ student.student_no }} - {{ student.first_name }} {{ student.last_name }}"?</p>
+                    <input type="submit" value="Evet">
                 </form>
             </div>                                                        
         </article>

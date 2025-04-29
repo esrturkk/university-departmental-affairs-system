@@ -21,7 +21,7 @@ class Student(models.Model):
     student_no = models.IntegerField(unique=True, verbose_name='Öğrenci No')
     first_name = models.CharField(max_length=50, verbose_name='Ad')
     last_name = models.CharField(max_length=50, verbose_name='Soyad')
-    email = models.EmailField(default='no-reply@example.com', verbose_name='E-posta')
+    email = models.EmailField(verbose_name='E-posta')
 
     def __str__(self):
         return f'{self.student_no} | {self.first_name} {self.last_name}'

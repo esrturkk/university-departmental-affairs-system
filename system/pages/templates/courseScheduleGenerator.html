@@ -40,9 +40,15 @@
                     <li class="dropdown"><a href="#">Personeller</a>
                         <ul class="dropdown-content">
                             <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>
-                            <li><a href="{% url 'staff' %}">Personelleri Görüntüle</a></li>
+                            <li><a href="{% url 'staff' %}">Personel Listesi</a></li>
                         </ul>
-                    </li>                
+                    </li>
+                    <li class="dropdown"><a href="#">Öğrenciler</a>
+                        <ul class="dropdown-content">
+                            <li><a href="{% url 'student_new' %}">Öğrenci Ekle</a></li>
+                            <li><a href="{% url 'students' %}">Öğrenci Listesi</a></li>
+                        </ul>
+                    </li>
                     <li><form action="{% url 'logout' %}" method="post">{% csrf_token %}
                         <button type="submit">Çıkış</button>
                     </form>
