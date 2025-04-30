@@ -6,8 +6,8 @@ from accounts.models import CustomUser
 class Course(models.Model):
     course_name = models.CharField(max_length=100, verbose_name='Ders Adı')
     course_code = models.CharField(max_length=20, unique=True, verbose_name='Ders Kodu')
-    course_credit = models.IntegerField(verbose_name='Ders Kredisi')
-    course_level = models.IntegerField(verbose_name='Ders Seviyesi')
+    course_credit = models.PositiveIntegerField(verbose_name='Ders Kredisi')
+    course_level = models.PositiveIntegerField(verbose_name='Ders Seviyesi')
 
     def __str__(self):
         return f'Ders: {self.course_name} | Kod: {self.course_code}'
@@ -17,11 +17,12 @@ class Course(models.Model):
         verbose_name_plural = 'dersler'
     
 class Classroom(models.Model):
-    classroom_name = models.CharField(max_length=50, unique=True, verbose_name='Derslik Adı')
-    classroom_capacity = models.IntegerField(verbose_name='Derslik Kapasitesi')
+    classroom_name = models.CharField(max_length=50, verbose_name='Derslik Adı')
+    classroom_code = models.CharField(max_length=50, unique=True, verbose_name='Derslik Kodu')
+    classroom_capacity = models.PositiveIntegerField(verbose_name='Derslik Kapasitesi')
 
     def __str__(self):
-        return f'Derslik: {self.classroom_name} | Kapasite: {self.classroom_capacity}'
+        return f'Derslik: {self.classroom_name} | Kod: {self.classroom_code}'
     
     class Meta:
         verbose_name = 'derslik'
@@ -81,10 +82,10 @@ class ExamSeatingArrangement(models.Model):
     exam = models.ForeignKey(ExamSchedule, on_delete=models.CASCADE, verbose_name='Sınav')
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, verbose_name='Derslik')
     student_number = models.CharField(max_length=20, verbose_name='Öğrenci No')
-    seat_number = models.IntegerField(verbose_name='Sıra No')
+    seat_number = models.PositiveIntegerField(verbose_name='Sıra No')
 
     def __str__(self):
-        return f'Öğrenci: {self.student_number} | Sıra: {self.seat_number} | Sınıf: {self.classroom.classroom_name}'
+        return f'Öğrenci: {self.student_number} | Sıra: {self.seat_number} | Derslik: {self.classroom.classroom_name}'
     
     class Meta:
         verbose_name = 'sınav oturma düzeni'

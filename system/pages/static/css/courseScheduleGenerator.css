@@ -10,6 +10,12 @@
     {
         display:grid;
     }
+
+    .content
+    {
+        padding:20px;
+        margin:20px;
+    }
 }
 
 @media only screen and (max-width:900px) /*for tablet and phone*/
@@ -27,7 +33,8 @@
 
     .content
     {
-        overflow-x:auto;
+        padding:10px;
+        margin:10px;
     }
 }
 
@@ -176,19 +183,20 @@ header
 /* article */
 article
 {
-    background-color:#f5f5f5;
-    border-radius:10px;
-    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
-    padding:20px;
-    margin:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
 }
 
 .content
 {
+    max-width:90%;
     background-color:#fff;
-    border-radius:10px;
+    overflow-x:auto;
+    box-sizing:border-box;
     box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
-    padding:10px 10px;
+    border-radius:10px;
 }
 
 .content h2
@@ -211,12 +219,13 @@ article
 
 .content table
 {
-    width:100%;
+    width:max-content;
+    min-width:700px;
     border-collapse:collapse;
     box-shadow:0 2px 8px rgba(0, 0, 0, 0.1);
     table-layout:fixed;
+    margin:0 auto;
     margin-top:20px;
-    min-width: 700px; /* veya 600px/800px içeriğe göre değişebilir */
 }
 
 .content table th, .content table td
@@ -242,14 +251,9 @@ article
 
 .content span
 {
+    color:#7f8c8d;
     display:block;
     margin-bottom:5px;
-}
-
-.content span
-{
-    color:#7f8c8d;
-    font-size:0.9rem;
 }
 
 .content form

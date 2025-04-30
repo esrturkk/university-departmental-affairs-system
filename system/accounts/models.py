@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
         verbose_name_plural = 'personeller'
 
 class Student(models.Model):
-    student_no = models.IntegerField(unique=True, verbose_name='Öğrenci No')
+    student_no = models.PositiveIntegerField(unique=True, verbose_name='Öğrenci No')
     first_name = models.CharField(max_length=50, verbose_name='Ad')
     last_name = models.CharField(max_length=50, verbose_name='Soyad')
     email = models.EmailField(verbose_name='E-posta')

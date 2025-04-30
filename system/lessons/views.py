@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from accounts.models import CustomUser
 from .models import Course, Classroom, CourseSchedule
-from .forms import CourseForm
-from accounts.views import AuthorizationRequiredMixin
+from .forms import CourseForm, ClassroomForm
+from accounts.views import AuthorizationRequiredMixin, LoginRequiredMixin
 from datetime import timedelta, datetime
 from functools import wraps
 import random
@@ -154,3 +154,43 @@ def courseScheduleGenerator(request):
 
 def courseScheduleViewer(request):
     pass
+
+class ClassroomListView(LoginRequiredMixin, ListView):
+    model = Classroom
+    template_name = 'classrooms.html'
+    context_object_name = 'classrooms'
+
+class ClassroomDetailView(LoginRequiredMixin, DetailView):
+    model = Classroom
+    template_name = 'classroom_detail.html'
+    context_object_name = 'classroom'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        classroom = self.get_object()
+        context['classroom_lessons'] = CourseSchedule.objects.filter(classroom=classroom).order_by('day_of_week', 'start_time')
+        return context
+
+class ClassroomCreateView(AuthorizationRequiredMixin, CreateView):
+    model = Classroom
+    template_name = 'classroom_new.html'
+    context_object_name = 'classroom'
+    form_class = ClassroomForm
+    
+    def get_success_url(self):
+        return reverse_lazy('classrooms')
+
+class ClassroomUpdateView(AuthorizationRequiredMixin, UpdateView):
+    model = Classroom
+    template_name = 'classroom_edit.html'
+    context_object_name = 'classroom'
+    form_class = ClassroomForm
+
+    def get_success_url(self):
+        return reverse_lazy('classrooms')
+
+class ClassroomDeleteView(AuthorizationRequiredMixin, DeleteView):
+    model = Classroom
+    template_name = 'classroom_delete.html'
+    context_object_name = 'classroom'
+    success_url = reverse_lazy('classrooms')

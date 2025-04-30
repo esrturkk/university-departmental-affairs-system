@@ -1,5 +1,5 @@
 from django import forms
-from .models import Course
+from .models import Course, Classroom
 
 class CourseForm(forms.ModelForm):
     class Meta:
@@ -10,4 +10,14 @@ class CourseForm(forms.ModelForm):
             'course_code': 'Kod',
             'course_credit': 'Kredi',
             'course_level': 'Seviye',
+        }
+
+class ClassroomForm(forms.ModelForm):
+    class Meta:
+        model = Classroom
+        fields = ['classroom_name', 'classroom_code', 'classroom_capacity']
+        labels = {
+            'classroom_name': 'Ad',
+            'classroom_code': 'Kod',
+            'classroom_capacity': 'Kapasite',
         }

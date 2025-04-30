@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 <html lang="tr">
     <head id="head">
-        <title>Öğrenci Detayı - Üniversite Bölüm İşleri</title>
+        <title>Derslikler - Üniversite Bölüm İşleri</title>
         <meta charset="UTF-8">
         <meta name="keywords" content="">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
-        <link rel="stylesheet" href="{% static 'css/detail.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/list.css' %}" type="text/css">
     </head>
     <body id="body">
         <header>
@@ -29,13 +29,9 @@
                     <li><a href="{% url 'dashboard' %}">Gösterge Paneli</a></li>
                     <li class="dropdown"><a href="#">Dersler</a>
                         <ul class="dropdown-content">
-                            {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
-                                <li><a href="{% url 'course_new' %}">Ders Ekle</a></li>
-                                <li><a href="{% url 'courses' %}">Ders Listesi</a></li>
-                                <li><a href="{% url 'courseScheduleGenerator' %}">Ders Programı Oluştur</a></li>
-                            {% elif user.role.title == 'Öğretim Elemanı' %}
-                                <li><a href="{% url 'courseScheduleViewer' %}">Ders Programı</a></li>
-                            {% endif %}
+                            <li><a href="{% url 'course_new' %}">Ders Ekle</a></li>
+                            <li><a href="{% url 'courses' %}">Ders Listesi</a></li>
+                            <li><a href="{% url 'courseScheduleGenerator' %}">Ders Programı Oluştur</a></li>
                         </ul>
                     </li>
                     <li><a href="#">Sınavlar</a></li>
@@ -82,12 +78,32 @@
         </nav>
         <article>
             <div class="content">
-                <h2>{{ student.student_no }} Numaralı Öğrenci Bilgisi</h2>
-                <p><strong>No:</strong> {{ student.student_no }}</p>
-                <p><strong>Ad:</strong> {{ student.first_name }}</p>
-                <p><strong>Soyad:</strong> {{ student.last_name }}</p>
-                <p><strong>E-posta:</strong> {{ student.email }}</p>
-            </div>
+                <h2>Derslik Listesi</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ad</th>
+                            <th>Kod</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for classroom in classrooms %}
+                            <tr>
+                                <td>{{ classroom.classroom_name }}</td>
+                                <td>{{ classroom.classroom_code }}</td>
+                                <td>
+                                    <a href="{% url 'classroom_detail' classroom.pk %}">Görüntüle</a>
+                                    {% if request.user.role.title == 'Bölüm Başkanı' or  request.user.role.title == 'Bölüm Sekreteri' %}
+                                        <a href="{% url 'classroom_edit' classroom.pk %}">Düzenle</a>
+                                        <a href="{% url 'classroom_delete' classroom.pk %}">Sil</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>                                                        
         </article>
         <footer>
             <div class="footer" id="top"></div>

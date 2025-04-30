@@ -35,7 +35,12 @@
                         </ul>
                     </li>
                     <li><a href="#">Sınavlar</a></li>
-                    <li><a href="#">Derslikler</a></li>
+                    <li class="dropdown"><a href="#">Derslikler</a>
+                        <ul class="dropdown-content">
+                            <li><a href="{% url 'classroom_new' %}">Derslik Ekle</a></li>
+                            <li><a href="{% url 'classrooms' %}">Derslik Listesi</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown"><a href="#">Personeller</a>
                         <ul class="dropdown-content">
                             <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>

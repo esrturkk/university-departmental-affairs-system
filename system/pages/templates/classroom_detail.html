@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="tr">
     <head id="head">
-        <title>Öğrenci Detayı - Üniversite Bölüm İşleri</title>
+        <title>Derslik Detayı - Üniversite Bölüm İşleri</title>
         <meta charset="UTF-8">
         <meta name="keywords" content="">
         <meta name="description" content="">
@@ -82,11 +82,41 @@
         </nav>
         <article>
             <div class="content">
-                <h2>{{ student.student_no }} Numaralı Öğrenci Bilgisi</h2>
-                <p><strong>No:</strong> {{ student.student_no }}</p>
-                <p><strong>Ad:</strong> {{ student.first_name }}</p>
-                <p><strong>Soyad:</strong> {{ student.last_name }}</p>
-                <p><strong>E-posta:</strong> {{ student.email }}</p>
+                <div class="info">
+                    <h2>{{ classroom.classroom_code }} Kodlu Derslik Künyesi</h2>
+                    <p><strong>Ad:</strong> {{ classroom.classroom_name }}</p>
+                    <p><strong>Kod:</strong> {{ classroom.classroom_code }}</p>
+                    <p><strong>Kapasite:</strong> {{ classroom.classroom_capacity }}</p>
+                </div>
+                <div class="status">
+                    <h2>Bu Derslikte Verilen Dersler</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ders</th>
+                                <th>Sınıf</th>
+                                <th>Gün</th>
+                                <th>Saat</th>
+                                <th>Öğretim Elemanı</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if classroom_lessons %}
+                                {% for lesson in classroom_lessons %}
+                                    <tr>
+                                        <td>{{ lesson.course.course_name }}</td>
+                                        <td>{{ lesson.course.course_level }}</td>
+                                        <td>{{ lesson.get_day_of_week_display }}</td>
+                                        <td>{{ lesson.start_time|time:"H:i" }} - {{ lesson.end_time|time:"H:i" }}</td>
+                                        <td>{{ lesson.instructor.get_full_name }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="4">Bu derslikte henüz ders bulunmamaktadır.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </article>
         <footer>

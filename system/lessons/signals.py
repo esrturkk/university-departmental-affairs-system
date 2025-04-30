@@ -33,12 +33,13 @@ def create_default_lessons(sender, **kwargs):
         )
 
     classroom_names = [
-        'Derslik A', 'Derslik B', 'Derslik C', 'Derslik D', 'Derslik E', 'Derslik F', 'Derslik G'
+        ('Derslik A', '1'), ('Derslik B', '2'), ('Derslik C', '3'), ('Derslik D', '4'), ('Derslik E', '5'), ('Derslik F', '6'), ('Derslik G', '7')
     ]
-    for classroom_name in classroom_names:
+    for classroom_name, classroom_code in classroom_names:
         Classroom.objects.get_or_create(
-            classroom_name=classroom_name,
+            classroom_code=classroom_code,
             defaults={
+                'classroom_name': classroom_name,
                 'classroom_capacity': random.choice([30, 40, 50, 60])
             }
         )

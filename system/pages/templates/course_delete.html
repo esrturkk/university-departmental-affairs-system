@@ -35,7 +35,12 @@
                         </ul>
                     </li>
                     <li><a href="#">Sınavlar</a></li>
-                    <li><a href="#">Derslikler</a></li>
+                    <li class="dropdown"><a href="#">Derslikler</a>
+                        <ul class="dropdown-content">
+                            <li><a href="{% url 'classroom_new' %}">Derslik Ekle</a></li>
+                            <li><a href="{% url 'classrooms' %}">Derslik Listesi</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown"><a href="#">Personeller</a>
                         <ul class="dropdown-content">
                             <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>
@@ -59,7 +64,7 @@
             <div class="content">
                 <h2>Dersi Sil</h2>
                 <form action="" method="post">{% csrf_token %}
-                    <p>Bu dersi silmek için emin misin "{{ course.course_name }} - {{ course.course_code }}"?</p>
+                    <p>Bu dersi silmek için emin misin "{{ course.course_name }}, {{ course.course_code }}"?</p>
                     <input type="submit" value="Evet">
                 </form>
             </div>                                                        
