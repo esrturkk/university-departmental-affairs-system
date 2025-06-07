@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+    <head id="head">
+        <title>{% block title %}{% endblock %}</title>
+        <meta charset="UTF-8">
+        <meta name="keywords" content="">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
+        {% block css %}{% endblock %}
+    </head>
+    <body id="body">
+        {% block content %}
+        {% endblock %}
+        <footer>
+            <div class="footer" id="top"></div>
+            <div class="footer" id="bottom">© 2025, Kocaeli Universitesi Yazılım Mühendisliği'ndeki birkaç öğrenci tarafından ❤️ ile tasarlanmıştır.</div>
+        </footer>
+    </body>
+</html>

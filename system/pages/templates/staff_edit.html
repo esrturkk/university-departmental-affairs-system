@@ -1,16 +1,10 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="tr">
-    <head id="head">
-        <title>Personeli Düzenle - Üniversite Bölüm İşleri</title>
-        <meta charset="UTF-8">
-        <meta name="keywords" content="">
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
-        <link rel="stylesheet" href="{% static 'css/edit.css' %}" type="text/css">
-    </head>
-    <body id="body">
+
+    {% block title %}Personeli Düzenle - Üniversite Bölüm İşleri{% endblock %}
+    {% block css %}<link rel="stylesheet" href="{% static 'css/edit.css' %}" type="text/css">{% endblock %}
+
+    {% block content %}
         <header>
             <div class="logo">
                 <a href="{% url 'dashboard' %}"><img id="logo" src="{% static 'media/kou.png' %}" width="75px" height="75px" title="logo" alt="logo"></a>
@@ -76,9 +70,4 @@
                 </form>
             </div>                                                        
         </article>
-        <footer>
-            <div class="footer" id="top"></div>
-            <div class="footer" id="bottom">© 2025, Kocaeli Universitesi Yazılım Mühendisliği'ndeki birkaç öğrenci tarafından ❤️ ile tasarlanmıştır.</div>
-        </footer>
-    </body>
-</html>
+    {% endblock %}
