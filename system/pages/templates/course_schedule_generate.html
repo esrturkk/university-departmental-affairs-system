@@ -3,7 +3,7 @@
 {% load schedule_extras %}
 
     {% block title %}Ders Programı Oluştur - Üniversite Bölüm İşleri{% endblock %}
-    {% block css %}<link rel="stylesheet" href="{% static 'css/courseScheduleGenerator.css' %}" type="text/css">{% endblock %}
+    {% block css %}<link rel="stylesheet" href="{% static 'css/course_schedule.css' %}" type="text/css">{% endblock %}
 
     {% block content %}
         <header>
@@ -26,7 +26,7 @@
                         <ul class="dropdown-content">
                             <li><a href="{% url 'course_new' %}">Ders Ekle</a></li>
                             <li><a href="{% url 'courses' %}">Ders Listesi</a></li>
-                            <li><a href="{% url 'courseScheduleGenerator' %}">Ders Programı Oluştur</a></li>
+                            <li><a href="{% url 'course_schedule_generate' %}">Ders Programı Oluştur</a></li>
                         </ul>
                     </li>
                     <li><a href="#">Sınavlar</a></li>
@@ -86,12 +86,12 @@
                                         {% for class in class_names %}
                                             {% with day_data=schedule_table|dict_get:day %}
                                                 {% with slot_data=day_data|dict_get:slot %}
-                                                    {% with entry=slot_data|dict_get:class %}
-                                                        {% if entry %}
-                                                            <td id="entry">
-                                                                <span id="course">Ders: {{ entry.course }}</span>
-                                                                <span id="info">Derslik: {{ entry.classroom }}</span>
-                                                                <span id="info"><i>Öğr. Görv: {{ entry.instructor }}</i></span>
+                                                    {% with info=slot_data|dict_get:class %}
+                                                        {% if info %}
+                                                            <td id="info">
+                                                                <span>Ders: {{ info.course }}</span>
+                                                                <span>Derslik: {{ info.classroom }}</span>
+                                                                <span><i>Öğr. Görv: {{ info.instructor }}</i></span>
                                                             </td>
                                                         {% else %}
                                                             <td>-</td>

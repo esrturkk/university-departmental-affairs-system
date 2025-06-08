@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load schedule_extras %}
 
-    {% block title %}Derslikler - Üniversite Bölüm İşleri{% endblock %}
-    {% block css %}<link rel="stylesheet" href="{% static 'css/list.css' %}" type="text/css">{% endblock %}
+    {% block title %}Ders Programı Görüntüle - Üniversite Bölüm İşleri{% endblock %}
+    {% block css %}<link rel="stylesheet" href="{% static 'css/course_schedule.css' %}" type="text/css">{% endblock %}
 
     {% block content %}
         <header>
@@ -76,31 +77,51 @@
         </nav>
         <article>
             <div class="content">
-                <h2>Derslik Listesi</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ad</th>
-                            <th>Kod</th>
-                            <th>İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for classroom in classrooms %}
+                <h2>{{ selected_user.get_full_name }} Adlı Kişinin Ders Programı</h2>
+                {% if error %}
+                    <p class="error">{{ error }}</p>
+                {% else %}
+                    <table>
+                        <thead>
                             <tr>
-                                <td>{{ classroom.classroom_name }}</td>
-                                <td>{{ classroom.classroom_code }}</td>
-                                <td>
-                                    <a href="{% url 'classroom_detail' classroom.pk %}">Görüntüle</a>
-                                    {% if request.user.role.title == 'Bölüm Başkanı' or  request.user.role.title == 'Bölüm Sekreteri' %}
-                                        <a href="{% url 'classroom_edit' classroom.pk %}">Düzenle</a>
-                                        <a href="{% url 'classroom_delete' classroom.pk %}">Sil</a>
-                                    {% endif %}
-                                </td>
+                                <th>Gün</th>
+                                {% for slot in time_slots %}
+                                    <th>{{ slot }}</th>
+                                {% endfor %}
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>                                                        
+                        </thead>
+                        <tbody>
+                            {% for day, day_label in day_names.items %}
+                                <tr>
+                                    <td id="day">{{ day_label }}</td>
+                                    {% for slot in time_slots %}
+                                        <td id="info">
+                                            {% with day_data=schedule_table|dict_get:day %}
+                                                {% with slot_data=day_data|dict_get:slot %}
+                                                    {% if slot_data %}
+                                                        {% for class_level, info in slot_data.items %}
+                                                            {% if info %}
+                                                                <span>{{ class_level }}. Sınıf</span>
+                                                                <span>Ders: {{ info.course }}</span>
+                                                                <span>Derslik: {{ info.classroom }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% endwith %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit">PDF formatında görüntüle</button>
+                </form>                
+            </div>
         </article>
     {% endblock %}

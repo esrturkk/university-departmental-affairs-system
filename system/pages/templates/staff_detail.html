@@ -26,9 +26,9 @@
                             {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
                                 <li><a href="{% url 'course_new' %}">Ders Ekle</a></li>
                                 <li><a href="{% url 'courses' %}">Ders Listesi</a></li>
-                                <li><a href="{% url 'courseScheduleGenerator' %}">Ders Programı Oluştur</a></li>
+                                <li><a href="{% url 'course_schedule_generate' %}">Ders Programı Oluştur</a></li>
                             {% elif user.role.title == 'Öğretim Elemanı' %}
-                                <li><a href="{% url 'courseScheduleViewer' %}">Ders Programı</a></li>
+                                <li><a href="{% url 'course_schedule_view' %}">Ders Programı</a></li>
                             {% endif %}
                         </ul>
                     </li>
@@ -76,12 +76,45 @@
         </nav>
         <article>
             <div class="content">
-                <h2>{{ staff.username }} Kimlikli Personel Bilgisi</h2>
-                <p><strong>ID:</strong> {{ staff.username }}</p>
-                <p><strong>Ad:</strong> {{ staff.first_name }}</p>
-                <p><strong>Soyad:</strong> {{ staff.last_name }}</p>
-                <p><strong>E-posta:</strong> {{ staff.email }}</p>
-                <p><strong>Görev:</strong> {{ staff.role.title }}</p>
-            </div>                                                        
+                <div class="info">
+                    <h2>{{ staff.username }} Kimlikli Personel Bilgisi</h2>
+                    <p><strong>ID:</strong> {{ staff.username }}</p>
+                    <p><strong>Ad:</strong> {{ staff.first_name }}</p>
+                    <p><strong>Soyad:</strong> {{ staff.last_name }}</p>
+                    <p><strong>E-posta:</strong> {{ staff.email }}</p>
+                    <p><strong>Görev:</strong> {{ staff.role.title }}</p>
+                </div>
+                <div class="status">
+                    {% if given_courses %}
+                        <h2>Bu Personelin Verdiği Dersler</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ders</th>
+                                    <th>Kod</th>
+                                    <th>Kredi</th>
+                                    <th>Seviye</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cs in given_courses %}
+                                    <tr>
+                                        <td>{{ cs.course.course_name }}</td>
+                                        <td>{{ cs.course.course_code }}</td>
+                                        <td>{{ cs.course.course_credit }}</td>
+                                        <td>{{ cs.course.course_level }}</td>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <form method="GET" action="{% url 'course_schedule_view' staff.id %}">
+                            <button type="submit">Ders Programını Görüntüle</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <p>Bu personel şu anda herhangi bir derse atanmamıştır.</p>
+                {% endif %}
+            </div>
         </article>
     {% endblock %}

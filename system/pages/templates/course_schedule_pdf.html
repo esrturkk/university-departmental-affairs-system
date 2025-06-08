@@ -1,0 +1,107 @@
+{% load static %}
+{% load schedule_extras %}
+<!DOCTYPE html>
+<html lang="tr">
+    <head id="head">
+        <title>{% block title %}Kapı İsimliği{% endblock %}</title>
+        <meta charset="UTF-8">
+        <meta name="keywords" content="">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" type="image/img" href="{% static 'media/kou.png' %}">
+        {% block css %}
+            <style>
+                body
+                {
+                    font-family:"DejaVu Sans", "Arial Unicode MS", Arial, Helvetica, sans-serif;
+                    font-size:11px;
+                }
+
+                table
+                {
+                    width:100%;
+                    border-collapse:collapse;
+                }
+
+                table, th, td
+                {
+                    border:1px solid #000;
+                }
+
+                th, td
+                {
+                    padding:8px;
+                    text-align:center;
+                }
+
+                @media print
+                {
+                    table
+                    {
+                        page-break-after:auto;
+                    }
+                    tr
+                    {
+                        page-break-inside:avoid;
+                        page-break-after:auto;
+                    }
+                    td, th
+                    {
+                        page-break-inside:avoid;
+                        page-break-after:auto;
+                    }
+                }
+            </style>
+        {% endblock %}
+    </head>
+    <body id="body">
+        {% block content %}
+            <article>
+                <div class="content">
+                    <h2>Ders Programı</h2>
+                    {% if error %}
+                        <p class="error">{{ error }}</p>
+                    {% else %}
+                        <p>Ad Soyad: {{ selected_user.get_full_name }}</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Gün</th>
+                                    {% for slot in time_slots %}
+                                        <th>{{ slot }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day, day_label in day_names.items %}
+                                    <tr>
+                                        <td id="day">{{ day_label }}</td>
+                                        {% for slot in time_slots %}
+                                            <td id="info">
+                                                {% with day_data=schedule_table|dict_get:day %}
+                                                    {% with slot_data=day_data|dict_get:slot %}
+                                                        {% if slot_data %}
+                                                            {% for class_level, info in slot_data.items %}
+                                                                {% if info %}
+                                                                    <span>{{ class_level }}. Sınıf</span>
+                                                                    <span>Ders: {{ info.course }}</span>
+                                                                    <span>Derslik: {{ info.classroom }}</span>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            -
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                {% endwith %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}             
+                </div>
+            </article>
+        {% endblock %}
+    </body>
+</html>

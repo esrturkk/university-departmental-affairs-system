@@ -245,7 +245,7 @@ article
 {
     width:100%;
     background-color:#fff;
-    display:block;
+    display:table;
     overflow-x:auto;
     border-collapse:collapse;
     border-radius:10px;
@@ -269,6 +269,40 @@ article
 {
     background-color:#ecf0f1;
     transition:background-color 0.3s ease;
+}
+
+.content form
+{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    padding:10px;
+    margin:5px;
+}
+
+.content form button
+{
+    background-color:#27ae60;
+    color:seashell;
+    text-align:center;
+    text-decoration:none;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    transition:background-color 0.3s ease, transform 0.2s ease;
+    padding:10px;
+    margin:5px;
+}
+
+.content form button:hover
+{
+    background-color:#1abc9c;
+    transform:scale(1.05);
+}
+
+.content form button:active
+{
+    transform:scale(0.95);
 }
 
 

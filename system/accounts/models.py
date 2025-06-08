@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
     role = models.ForeignKey('Role', on_delete=models.CASCADE, null=True, verbose_name='Rol')
 
     def __str__(self):
-        return f'{self.username} | {self.first_name} {self.last_name}'
+        return f'{self.first_name} {self.last_name}'
     
     def get_absolute_url(self):
         return reverse('staff_detail', kwargs={"pk": self.pk})
@@ -24,7 +24,7 @@ class Student(models.Model):
     email = models.EmailField(verbose_name='E-posta')
 
     def __str__(self):
-        return f'{self.student_no} | {self.first_name} {self.last_name}'
+        return f'{self.first_name} {self.last_name}'
     
     class Meta:
         verbose_name = 'öğrenci'

@@ -4,12 +4,13 @@ from .models import Course, Classroom
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['course_name', 'course_code', 'course_credit', 'course_level']
+        fields = ['course_name', 'course_code', 'course_credit', 'course_level', 'course_instructor']
         labels = {
             'course_name': 'Ad',
             'course_code': 'Kod',
             'course_credit': 'Kredi',
             'course_level': 'Seviye',
+            'course_instructor': 'Öğretim Elemanı',
         }
 
 class ClassroomForm(forms.ModelForm):

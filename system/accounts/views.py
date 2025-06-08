@@ -8,6 +8,7 @@ from .models import CustomUser, Role, Student
 from .forms import StaffForm, StudentForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.hashers import make_password
+from lessons.models import CourseSchedule
 
 # Create your views here.
 
@@ -77,6 +78,13 @@ class StaffDetailView(LoginRequiredMixin, DetailView):
     model = CustomUser
     template_name = 'staff_detail.html'
     context_object_name = 'staff'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        staff = self.get_object()
+        given_courses = CourseSchedule.objects.filter(course__course_instructor=staff)
+        context['given_courses'] = given_courses
+        return context
 
 class StaffCreateView(AuthorizationRequiredMixin, CreateView):
     model = CustomUser

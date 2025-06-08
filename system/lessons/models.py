@@ -8,9 +8,19 @@ class Course(models.Model):
     course_code = models.CharField(max_length=20, unique=True, verbose_name='Ders Kodu')
     course_credit = models.PositiveIntegerField(verbose_name='Ders Kredisi')
     course_level = models.PositiveIntegerField(verbose_name='Ders Seviyesi')
+    course_instructor = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        limit_choices_to={
+            'role__title__in': ['Öğretim Elemanı', 'Bölüm Başkanı']
+        },
+        verbose_name='Öğretim Elemanı veya Bölüm Başkanı'
+    )
 
     def __str__(self):
-        return f'Ders: {self.course_name} | Kod: {self.course_code}'
+        return f'{self.course_name} | {self.course_code}'
     
     class Meta:
         verbose_name = 'ders'
@@ -22,7 +32,7 @@ class Classroom(models.Model):
     classroom_capacity = models.PositiveIntegerField(verbose_name='Derslik Kapasitesi')
 
     def __str__(self):
-        return f'Derslik: {self.classroom_name} | Kod: {self.classroom_code}'
+        return f'{self.classroom_name} | {self.classroom_code}'
     
     class Meta:
         verbose_name = 'derslik'
@@ -41,13 +51,12 @@ class CourseSchedule(models.Model):
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Ders')
     classroom = models.ForeignKey(Classroom, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Derslik')
-    instructor = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role__title': 'Öğretim Elemanı'}, verbose_name='Öğretim Elemanı')
     day_of_week = models.CharField(max_length=3, choices=DAYS_OF_WEEK, verbose_name='Günler')
     start_time = models.TimeField(verbose_name='Başlama Saati')
     end_time = models.TimeField(verbose_name='Bitiş Saati')
 
     def __str__(self):
-        return f'Ders: {self.course.course_name} | Gün: {self.get_day_of_week_display()} | Saat: {self.start_time}'
+        return f'{self.course.course_name} | {self.get_day_of_week_display()} | {self.start_time}'
     
     class Meta:
         verbose_name = 'ders programı'
@@ -61,7 +70,7 @@ class ExamSchedule(models.Model):
     note = models.TextField(blank=True, null=True, verbose_name='Açıklama')
 
     def __str__(self):
-        return f'Ders: {self.course.course_name} | Gün: {self.exam_day}'
+        return f'{self.course.course_name} | {self.exam_day}'
     
     class Meta:
         verbose_name = 'sınav programı'
@@ -85,34 +94,8 @@ class ExamSeatingArrangement(models.Model):
     seat_number = models.PositiveIntegerField(verbose_name='Sıra No')
 
     def __str__(self):
-        return f'Öğrenci: {self.student_number} | Sıra: {self.seat_number} | Derslik: {self.classroom.classroom_name}'
+        return f'{self.student_number} | {self.classroom.classroom_name} | {self.seat_number}'
     
     class Meta:
         verbose_name = 'sınav oturma düzeni'
         verbose_name_plural = 'sınav oturma düzenleri'
-
-class InstructorSchedule(models.Model):
-    instructor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, limit_choices_to={'role__title': 'Öğretim Elemanı'}, verbose_name='Öğretim Elemanı')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Ders')
-    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, verbose_name='Derslik')
-
-    DAYS_OF_WEEK = [
-        ('Pzt', 'Pazartesi'),
-        ('Sal', 'Salı'),
-        ('Çrş', 'Çarşamba'),
-        ('Prş', 'Perşembe'),
-        ('Cum', 'Cuma'),
-        ('Cmt', 'Cumartesi'),
-        ('Pzr', 'Pazar'),
-    ]
-
-    day_of_week = models.CharField(max_length=3, choices=DAYS_OF_WEEK, verbose_name='Gün')
-    start_time = models.TimeField(verbose_name='Başlama Saati')
-    end_time = models.TimeField(verbose_name='Bitiş Saati')
-
-    def __str__(self):
-        return f'Görevli: {self.instructor.username} | Ders: {self.course.course_name} | Gün: {self.get_day_of_week_display()}'
-    
-    class Meta:
-        verbose_name = 'öğretim elemanı programı'
-        verbose_name_plural = 'öğretim elemanı programları'

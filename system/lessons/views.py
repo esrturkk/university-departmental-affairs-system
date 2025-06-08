@@ -5,9 +5,14 @@ from accounts.models import CustomUser
 from .models import Course, Classroom, CourseSchedule
 from .forms import CourseForm, ClassroomForm
 from accounts.views import AuthorizationRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from datetime import timedelta, datetime
 from functools import wraps
 import random
+from datetime import time
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
 
 class CourseListView(AuthorizationRequiredMixin, ListView):
     model = Course
@@ -55,9 +60,9 @@ time_slots = [
     '17:00-17:50'
 ]
 
-MIN_COURSES = 28
-MIN_INSTRUCTORS = 10
-MIN_CLASSROOMS = 7
+MIN_COURSES = 10
+MIN_INSTRUCTORS = 5
+MIN_CLASSROOMS = 3
 
 def role_required(allowed_roles):
     def decorator(view_func):
@@ -71,7 +76,7 @@ def role_required(allowed_roles):
     return decorator
 
 @role_required(['Bölüm Başkanı', 'Bölüm Sekreteri'])
-def courseScheduleGenerator(request):
+def course_schedule_generate(request):
     if request.method == 'POST':
         CourseSchedule.objects.all().delete()
 
@@ -80,42 +85,67 @@ def courseScheduleGenerator(request):
         classrooms = list(Classroom.objects.all())
 
         if len(courses) < MIN_COURSES or len(instructors) < MIN_INSTRUCTORS or len(classrooms) < MIN_CLASSROOMS:
-            return render(request, 'courseScheduleGenerator.html', {'error': 'Yeterli sayıda ders, öğretim elemanı veya derslik bulunamadı.'})
+            return render(request, 'course_schedule_generate.html', {'error': 'Yeterli sayıda ders, öğretim elemanı veya derslik bulunamadı.'})
 
-        used_slots = set()
+        instructor_schedule = {inst.id: [] for inst in instructors}
+        classroom_schedule = {room.id: [] for room in classrooms}
 
-        for course_idx, course in enumerate(courses):
-            instructor = instructors[course_idx % len(instructors)]
-            classroom = classrooms[course_idx % len(classrooms)]
+        daily_slots = []
+        for day in DAYS:
+            for start_hour in START_HOURS:
+                start = time(start_hour, 0)
+                end = (datetime.combine(datetime.today(), start) + timedelta(minutes=50)).time()
+                daily_slots.append((day, start, end))
 
-            slot_found = False
-            for day in random.sample(DAYS, len(DAYS)):
-                for hour in START_HOURS:
-                    if (day, hour, instructor.id) in used_slots: continue
-                    if (day, hour, classroom.id) in used_slots: continue
+        def is_conflict(schedule_list, day, start, end):
+            for d, s, e in schedule_list:
+                if d == day:
+                    if not (end <= s or start >= e):
+                        return True
+            return False
 
-                    start_time = datetime.strptime(f'{hour}:00', '%H:%M')
-                    slot_end = start_time + timedelta(minutes=50)
+        for course in courses:
+            instructor = course.course_instructor
+            if not instructor:
+                continue
 
-                    CourseSchedule.objects.create(
-                        course=course,
-                        classroom=classroom,
-                        instructor=instructor,
-                        day_of_week=day,
-                        start_time=start_time.time(),
-                        end_time=slot_end.time(),
-                    )
+            assigned = False
+            random.shuffle(daily_slots)
+            random.shuffle(classrooms)
 
-                    used_slots.add((day, hour, instructor.id))
-                    used_slots.add((day, hour, classroom.id))
+            for day, start, end in daily_slots:
+                if is_conflict(instructor_schedule[instructor.id], day, start, end):
+                    continue
 
-                    slot_found = True
-                    break
-                if slot_found:
-                    break
-    
-        return redirect('courseScheduleGenerator')
+                suitable_classroom = None
+                for room in classrooms:
+                    if not is_conflict(classroom_schedule[room.id], day, start, end):
+                        suitable_classroom = room
+                        break
 
+                if suitable_classroom is None:
+                    continue
+
+                CourseSchedule.objects.create(
+                    course=course,
+                    classroom=suitable_classroom,
+                    day_of_week=day,
+                    start_time=start,
+                    end_time=end,
+                )
+
+                instructor_schedule[instructor.id].append((day, start, end))
+                classroom_schedule[suitable_classroom.id].append((day, start, end))
+
+                assigned = True
+                break
+
+            if not assigned:
+                return render(request, 'course_schedule_generate.html', {
+                    'error': f'Ders "{course.course_name}" için uygun saat ve derslik bulunamadı.'
+                })
+
+        return redirect('course_schedule_generate')
 
     schedules = CourseSchedule.objects.all()
 
@@ -126,17 +156,17 @@ def courseScheduleGenerator(request):
             'day': sc.day_of_week,
             'slot': f'{sc.start_time.strftime('%H:%M')}-{sc.end_time.strftime('%H:%M')}',
             'course': sc.course.course_name,
-            'instructor': sc.instructor.get_full_name() if sc.instructor else 'N/A',
+            'instructor': sc.course.course_instructor.get_full_name() if sc.course.course_instructor else 'N/A',
             'classroom': sc.classroom.classroom_name if sc.classroom else 'N/A',
         })
 
     schedule_table = {}
-    class_numbers = [1, 2, 3, 4]
+    class_levels = sorted(set(item['class'] for item in schedule))
 
     for day in DAYS:
         schedule_table[day] = {}
         for slot in time_slots:
-            schedule_table[day][slot] = {c: None for c in class_numbers}
+            schedule_table[day][slot] = {level: None for level in class_levels}
 
     for item in schedule:
         day = item['day']
@@ -144,16 +174,74 @@ def courseScheduleGenerator(request):
         class_no = item['class']
         schedule_table[day][slot][class_no] = item
 
-    return render(request, 'courseScheduleGenerator.html', {
+    return render(request, 'course_schedule_generate.html', {
         'schedule_table': schedule_table,
         'schedule': schedule,
         'time_slots': time_slots,
-        'class_names': class_numbers,
+        'class_names': class_levels,
         'day_names': day_names
     })
 
-def courseScheduleViewer(request):
-    pass
+@login_required(login_url='home')
+def course_schedule_view(request, user_id=None):
+    viewer = request.user
+    
+    if user_id is None:
+        selected_user = viewer
+    else:
+        try:
+            selected_user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
+            return HttpResponse('Kullanıcı bulunamadı.', status=404)
+
+    schedules = CourseSchedule.objects.filter(course__course_instructor=selected_user)
+
+    schedule = []
+    for sc in schedules:
+        schedule.append({
+            'class': sc.course.course_level,
+            'day': sc.day_of_week,
+            'slot': f'{sc.start_time.strftime("%H:%M")}-{sc.end_time.strftime("%H:%M")}',
+            'course': sc.course.course_name,
+            'instructor': sc.course.course_instructor.get_full_name() if sc.course.course_instructor else 'N/A',
+            'classroom': sc.classroom.classroom_name if sc.classroom else 'N/A',
+        })
+
+    schedule_table = {}
+    class_levels = sorted(set(item['class'] for item in schedule))
+
+    for day in DAYS:
+        schedule_table[day] = {}
+        for slot in time_slots:
+            schedule_table[day][slot] = {level: None for level in class_levels}
+
+    for item in schedule:
+        day = item['day']
+        slot = item['slot']
+        class_no = item['class']
+        schedule_table[day][slot][class_no] = item
+
+    context = {
+        'schedule_table': schedule_table,
+        'time_slots': time_slots,
+        'class_names': class_levels,
+        'day_names': day_names,
+        'user': viewer,
+        'selected_user': selected_user,
+    }
+
+    if request.method == 'POST':
+        template = get_template('course_schedule_pdf.html')
+        html = template.render(context)
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="ders_programi.pdf"'
+        pisa_status = pisa.CreatePDF(html, dest=response)
+
+        if pisa_status.err:
+            return HttpResponse('PDF oluşturulurken hata oluştu.')
+        return response
+
+    return render(request, 'course_schedule_view.html', context)
 
 class ClassroomListView(LoginRequiredMixin, ListView):
     model = Classroom
