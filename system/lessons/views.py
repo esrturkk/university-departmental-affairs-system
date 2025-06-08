@@ -1,18 +1,18 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from accounts.models import CustomUser
-from .models import Course, Classroom, CourseSchedule
-from .forms import CourseForm, ClassroomForm
+from .models import Course, Classroom, CourseSchedule, ExamSchedule, InvigilatorAssignment
+from .forms import CourseForm, ClassroomForm, ExamScheduleForm
+from django.http import HttpResponse, HttpResponseForbidden
+from datetime import time, timedelta, datetime
 from accounts.views import AuthorizationRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from datetime import timedelta, datetime
 from functools import wraps
 import random
-from datetime import time
 from django.template.loader import get_template
-from django.http import HttpResponse
 from xhtml2pdf import pisa
+from django.views.decorators.http import require_POST
 
 class CourseListView(AuthorizationRequiredMixin, ListView):
     model = Course
@@ -242,6 +242,84 @@ def course_schedule_view(request, user_id=None):
         return response
 
     return render(request, 'course_schedule_view.html', context)
+
+@login_required(login_url='home')
+def exam_schedule_generate_view(request):
+    allowed_roles = ['Bölüm Başkanı', 'Bölüm Sekreteri']
+    user_role = getattr(request.user, 'role', None)
+    user_role_title = getattr(user_role, 'title', None)
+
+    if request.method == 'POST':
+        form = ExamScheduleForm(request.POST)
+
+        if user_role_title not in allowed_roles:
+            form.add_error(None, 'Bu işlemi yapmaya yetkiniz yok.')
+        else:
+            if form.is_valid():
+                course = form.cleaned_data['course']
+                classroom = form.cleaned_data['classroom']
+                invigilator = form.cleaned_data['invigilator']
+                exam_day = form.cleaned_data['exam_day']
+                start_time = form.cleaned_data['start_time']
+                end_time = form.cleaned_data['end_time']
+
+                if ExamSchedule.objects.filter(course=course).exists():
+                    form.add_error('course', 'Bu ders için zaten bir sınav programı oluşturulmuş.')
+                else:
+                    classroom_conflict = ExamSchedule.objects.filter(
+                        classroom=classroom,
+                        exam_day=exam_day,
+                        start_time__lt=end_time,
+                        end_time__gt=start_time
+                    ).exists()
+
+                    invigilator_conflict = InvigilatorAssignment.objects.filter(
+                        invigilator=invigilator,
+                        exam__exam_day=exam_day,
+                        exam__start_time__lt=end_time,
+                        exam__end_time__gt=start_time
+                    ).exists()
+
+                    if classroom_conflict:
+                        form.add_error('classroom', 'Seçilen derslik bu saatlerde başka bir sınav için kullanılıyor.')
+                    elif invigilator_conflict:
+                        form.add_error('invigilator', 'Seçilen gözetmen bu saatlerde başka bir sınavda görevlidir.')
+                    else:
+                        exam = form.save()
+                        InvigilatorAssignment.objects.create(exam=exam, invigilator=invigilator)
+                        return redirect('exam_schedule')
+    else:
+        form = ExamScheduleForm()
+
+    exams = ExamSchedule.objects.select_related('course', 'classroom').all().order_by('exam_day', 'start_time')
+    assignments = InvigilatorAssignment.objects.select_related('exam', 'invigilator')
+
+    exam_data = []
+    for exam in exams:
+        invigilator = next((a.invigilator for a in assignments if a.exam.id == exam.id), None)
+        exam_data.append({
+            'id': exam.id,
+            'course_name': exam.course.course_name,
+            'exam_day': exam.exam_day,
+            'start_time': exam.start_time,
+            'end_time': exam.end_time,
+            'classroom': exam.classroom.classroom_name if exam.classroom else 'Yok',
+            'invigilator': invigilator.get_full_name() if invigilator else 'Atanmadı',
+            'note': exam.note or '',
+        })
+
+    return render(request, 'exam_schedule.html', {
+        'form': form,
+        'exams': exam_data
+    })
+
+@role_required(['Bölüm Başkanı', 'Bölüm Sekreteri'])
+@require_POST
+def exam_schedule_delete(request, exam_id):
+    exam = get_object_or_404(ExamSchedule, id=exam_id)
+    InvigilatorAssignment.objects.filter(exam=exam).delete()
+    exam.delete()
+    return HttpResponseRedirect(reverse('exam_schedule'))
 
 class ClassroomListView(LoginRequiredMixin, ListView):
     model = Classroom

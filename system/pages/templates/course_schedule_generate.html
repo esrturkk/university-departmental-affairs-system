@@ -3,7 +3,7 @@
 {% load schedule_extras %}
 
     {% block title %}Ders Programı Oluştur - Üniversite Bölüm İşleri{% endblock %}
-    {% block css %}<link rel="stylesheet" href="{% static 'css/course_schedule.css' %}" type="text/css">{% endblock %}
+    {% block css %}<link rel="stylesheet" href="{% static 'css/schedule.css' %}" type="text/css">{% endblock %}
 
     {% block content %}
         <header>
@@ -29,7 +29,11 @@
                             <li><a href="{% url 'course_schedule_generate' %}">Ders Programı Oluştur</a></li>
                         </ul>
                     </li>
-                    <li><a href="#">Sınavlar</a></li>
+                    <li class="dropdown"><a href="#">Sınavlar</a>
+                        <ul class="dropdown-content">
+                            <li><a href="{% url 'exam_schedule' %}">Sınav Programı</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown"><a href="#">Derslikler</a>
                         <ul class="dropdown-content">
                             <li><a href="{% url 'classroom_new' %}">Derslik Ekle</a></li>
@@ -80,15 +84,15 @@
                                 {% for slot in time_slots %}
                                     <tr>
                                         {% if forloop.first %}
-                                            <td id="day" rowspan="{{ time_slots|length }}">{{ day_label }}</td>
+                                            <td rowspan="{{ time_slots|length }}">{{ day_label }}</td>
                                         {% endif %}
-                                        <td id="hour">{{ slot }}</td>
+                                        <td>{{ slot }}</td>
                                         {% for class in class_names %}
                                             {% with day_data=schedule_table|dict_get:day %}
                                                 {% with slot_data=day_data|dict_get:slot %}
                                                     {% with info=slot_data|dict_get:class %}
                                                         {% if info %}
-                                                            <td id="info">
+                                                            <td>
                                                                 <span>Ders: {{ info.course }}</span>
                                                                 <span>Derslik: {{ info.classroom }}</span>
                                                                 <span><i>Öğr. Görv: {{ info.instructor }}</i></span>

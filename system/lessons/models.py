@@ -14,9 +14,9 @@ class Course(models.Model):
         null=True,
         blank=True,
         limit_choices_to={
-            'role__title__in': ['Öğretim Elemanı', 'Bölüm Başkanı']
+            'role__title__in': ['Bölüm Başkanı', 'Öğretim Elemanı']
         },
-        verbose_name='Öğretim Elemanı veya Bölüm Başkanı'
+        verbose_name='Öğretim Elemanı'
     )
 
     def __str__(self):
@@ -54,6 +54,7 @@ class CourseSchedule(models.Model):
     day_of_week = models.CharField(max_length=3, choices=DAYS_OF_WEEK, verbose_name='Günler')
     start_time = models.TimeField(verbose_name='Başlama Saati')
     end_time = models.TimeField(verbose_name='Bitiş Saati')
+    note = models.TextField(blank=True, null=True, verbose_name='Açıklama')
 
     def __str__(self):
         return f'{self.course.course_name} | {self.get_day_of_week_display()} | {self.start_time}'
@@ -64,6 +65,7 @@ class CourseSchedule(models.Model):
 
 class ExamSchedule(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Ders')
+    classroom = models.ForeignKey(Classroom, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Derslik')
     exam_day = models.DateField(verbose_name='Sınav Günü')
     start_time = models.TimeField(verbose_name='Başlama Saati')
     end_time = models.TimeField(verbose_name='Bitiş Saati')

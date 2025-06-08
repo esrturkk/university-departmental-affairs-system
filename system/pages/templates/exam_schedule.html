@@ -2,7 +2,7 @@
 {% load static %}
 {% load schedule_extras %}
 
-    {% block title %}Ders Programı Görüntüle - Üniversite Bölüm İşleri{% endblock %}
+    {% block title %}Sınav Programı - Üniversite Bölüm İşleri{% endblock %}
     {% block css %}<link rel="stylesheet" href="{% static 'css/schedule.css' %}" type="text/css">{% endblock %}
 
     {% block content %}
@@ -81,51 +81,56 @@
         </nav>
         <article>
             <div class="content">
-                <h2>{{ selected_user.get_full_name }} Adlı Kişinin Ders Programı</h2>
-                {% if error %}
-                    <p class="error">{{ error }}</p>
-                {% else %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Gün</th>
-                                {% for slot in time_slots %}
-                                    <th>{{ slot }}</th>
-                                {% endfor %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for day, day_label in day_names.items %}
-                                <tr>
-                                    <td>{{ day_label }}</td>
-                                    {% for slot in time_slots %}
-                                        <td>
-                                            {% with day_data=schedule_table|dict_get:day %}
-                                                {% with slot_data=day_data|dict_get:slot %}
-                                                    {% if slot_data %}
-                                                        {% for class_level, info in slot_data.items %}
-                                                            {% if info %}
-                                                                <span>{{ class_level }}. Sınıf</span>
-                                                                <span>Ders: {{ info.course }}</span>
-                                                                <span>Derslik: {{ info.classroom }}</span>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% else %}
-                                                        -
-                                                    {% endif %}
-                                                {% endwith %}
-                                            {% endwith %}
-                                        </td>
-                                    {% endfor %}
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <h2>Bölüm Sınav Programı</h2>
+                {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit">Sınavı Kaydet</button>
+                    </form>
                 {% endif %}
-                <form method="POST">
-                    {% csrf_token %}
-                    <button type="submit">PDF formatında görüntüle</button>
-                </form>                
+                <h2>Mevcut Sınavlar</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ders</th>
+                            <th>Tarih</th>
+                            <th>Başlangıç</th>
+                            <th>Bitiş</th>
+                            <th>Derslik</th>
+                            <th>Gözetmen</th>
+                            <th>Açıklama</th>
+                            {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                                <th>İşlem</th>
+                            {% else %}
+                                <th></th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exam in exams %}
+                            <tr>
+                                <td>{{ exam.course_name }}</td>
+                                <td>{{ exam.exam_day }}</td>
+                                <td>{{ exam.start_time }}</td>
+                                <td>{{ exam.end_time }}</td>
+                                <td>{{ exam.classroom }}</td>
+                                <td>{{ exam.invigilator }}</td>
+                                <td>{{ exam.note }}</td>
+                                <td>
+                                {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                                    <form method="POST" action="{% url 'exam_schedule_delete' exam.id %}" onsubmit="return confirm('Sınav silinecek, emin misiniz?');">
+                                        {% csrf_token %}
+                                        <button type="submit">Sil</button>
+                                    </form>
+                                {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="8">Henüz sınav programı oluşturulmadı.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </article>
     {% endblock %}

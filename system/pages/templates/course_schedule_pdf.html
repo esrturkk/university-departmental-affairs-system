@@ -75,9 +75,9 @@
                             <tbody>
                                 {% for day, day_label in day_names.items %}
                                     <tr>
-                                        <td id="day">{{ day_label }}</td>
+                                        <td>{{ day_label }}</td>
                                         {% for slot in time_slots %}
-                                            <td id="info">
+                                            <td>
                                                 {% with day_data=schedule_table|dict_get:day %}
                                                     {% with slot_data=day_data|dict_get:slot %}
                                                         {% if slot_data %}

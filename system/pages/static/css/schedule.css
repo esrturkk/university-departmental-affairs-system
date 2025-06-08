@@ -230,7 +230,6 @@ article
 
 .content table th, .content table td
 {
-    background-color:#f9fafb;
     font-size:0.9rem;
     text-align:center;
     border:1px solid #ddd;
@@ -243,30 +242,62 @@ article
     color:white;
 }
 
-.content #info
+.content table td
 {
+    background-color:#f9fafb;
     color:#2c3e50;
-    font-weight:bold;
 }
 
 .content span
 {
     color:#7f8c8d;
     display:block;
+    font-weight:bold;
     margin-bottom:5px;
 }
 
 .content form
 {
     display:flex;
-    flex-direction:row;
+    flex-direction:column;
     justify-content:center;
+    align-items:center;
     padding:10px;
     margin:5px;
 }
 
+.content form p
+{
+    width:100%;
+}
+
+.content form input, .content form select, .content form textarea
+{
+    width:100%;
+    max-width:300px;
+    background-color:#fafafa;
+    color:#333;
+    font-size:1rem;
+    box-sizing:border-box;
+    border:1.5px solid #ccc;
+    border-radius:6px;
+    transition:border-color 0.3s ease, box-shadow 0.3s ease;
+    padding:10px;
+    margin:5px;
+}
+
+.content form input:focus, .content form select:focus, .content form textarea:focus
+{
+    background-color:#fff;
+    border-color:#27ae60;
+    outline:none;
+    box-shadow:0 0 6px rgba(39, 174, 96, 0.6);
+}
+
 .content form button
 {
+    width:100%;
+    max-width:200px;
     background-color:#27ae60;
     color:seashell;
     text-align:center;

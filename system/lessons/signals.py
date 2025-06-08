@@ -37,7 +37,7 @@ def create_default_lessons(sender, **kwargs):
         ('Algoritmalar ve Veri Yapıları', 'ALGO'), ('Elektrik Devreleri', 'ELEC1'), 
         ('Olasılık ve İstatistik', 'STAT1'), ('Yapay Zeka', 'AI1'), ('Python Programlama', 'PYTHON'),
         ('Dijital Tasarım', 'DIG'), ('Ağ Teknolojileri', 'NET1'), ('İşletim Sistemleri', 'OS'),
-        ('Makine Öğrenmesi', 'ML'), ('Veri Madencliği', 'DM'), 
+        ('Makine Öğrenmesi', 'ML'), ('Veri Madenciliği', 'DM'), 
         ('Mobil Programlama', 'MOBILE'), ('Bilgisayar Grafikleri', 'CG'),
         ('Yazılım Mühendisliği', 'SENG'), ('Proje Yönetimi', 'PM1'), 
         ('İnternet Programlama', 'WEB'), ('Veri Tabanı Tasarımı', 'DBD'),
