@@ -85,6 +85,15 @@
                 <p><strong>Ad:</strong> {{ student.first_name }}</p>
                 <p><strong>Soyad:</strong> {{ student.last_name }}</p>
                 <p><strong>E-posta:</strong> {{ student.email }}</p>
+                <p><strong>Aldığı Dersler</strong>:
+                    {% if student.courses.all %}
+                        {% for course in student.courses.all %}
+                            {{ course.course_name }} ({{ course.course_code }}),<br>
+                        {% endfor %}
+                    {% else %}
+                        Bu öğrenci henüz herhangi bir ders almamış.
+                    {% endif %}
+                </p>
             </div>
         </article>
     {% endblock %}

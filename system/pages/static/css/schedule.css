@@ -294,7 +294,7 @@ article
     box-shadow:0 0 6px rgba(39, 174, 96, 0.6);
 }
 
-.content form button
+.content table td a, .content form button
 {
     width:100%;
     max-width:200px;
@@ -310,13 +310,13 @@ article
     margin:5px;
 }
 
-.content form button:hover
+.content table td a:hover, .content form button:hover
 {
     background-color:#1abc9c;
     transform:scale(1.05);
 }
 
-.content form button:active
+.content table td a:active, .content form button:active
 {
     transform:scale(0.95);
 }

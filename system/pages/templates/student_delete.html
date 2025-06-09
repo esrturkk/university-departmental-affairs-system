@@ -60,7 +60,7 @@
         </nav>
         <article>
             <div class="content">
-                <h2>Öğrenciyi Sil</h2>
+                <h2>{{ student.student_no }} Numaralı Öğrenciyi Sil</h2>
                 <form action="" method="post">{% csrf_token %}
                     <p>Bu öğrenciyi silmek için emin misin "{{ student.student_no }}, {{ student.first_name }} {{ student.last_name }}"?</p>
                     <input type="submit" value="Evet">

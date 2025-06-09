@@ -1,5 +1,5 @@
 from django.db import models
-from accounts.models import CustomUser
+from accounts.models import CustomUser, Student
 
 # Create your models here.
 
@@ -18,6 +18,13 @@ class Course(models.Model):
         },
         verbose_name='Öğretim Elemanı'
     )
+    course_students = models.ManyToManyField(
+        Student,
+        through='CourseStudent',
+        related_name='courses',
+        blank=True,
+        verbose_name='Öğrenciler'
+    )
 
     def __str__(self):
         return f'{self.course_name} | {self.course_code}'
@@ -25,6 +32,17 @@ class Course(models.Model):
     class Meta:
         verbose_name = 'ders'
         verbose_name_plural = 'dersler'
+
+class CourseStudent(models.Model):
+    course = models.ForeignKey('Course', on_delete=models.CASCADE, verbose_name='Ders')
+    student = models.ForeignKey('accounts.Student', on_delete=models.CASCADE, verbose_name='Öğrenci')
+
+    class Meta:
+        verbose_name = 'Ders-Öğrenci İlişkisi'
+        verbose_name_plural = 'Ders-Öğrenci İlişkileri'
+
+    def __str__(self):
+        return f''
     
 class Classroom(models.Model):
     classroom_name = models.CharField(max_length=50, verbose_name='Derslik Adı')
@@ -92,7 +110,7 @@ class InvigilatorAssignment(models.Model):
 class ExamSeatingArrangement(models.Model):
     exam = models.ForeignKey(ExamSchedule, on_delete=models.CASCADE, verbose_name='Sınav')
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, verbose_name='Derslik')
-    student_number = models.CharField(max_length=20, verbose_name='Öğrenci No')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Öğrenci')
     seat_number = models.PositiveIntegerField(verbose_name='Sıra No')
 
     def __str__(self):

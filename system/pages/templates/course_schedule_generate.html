@@ -62,55 +62,56 @@
         <article>
             <div class="content">
                 <h2>Bölüm Ders Programı</h2>
-                {% if error %}
-                    <p class="error">{{ error }}</p>
-                {% else %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th rowspan="2">Gün</th>
-                                <th rowspan="2">Saat</th>
-                                <th colspan="4">Sınıflar</th>
-                            </tr>
-                            <tr>
-                                <th>1. Sınıf</th>
-                                <th>2. Sınıf</th>
-                                <th>3. Sınıf</th>
-                                <th>4. Sınıf</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for day, day_label in day_names.items %}
-                                {% for slot in time_slots %}
-                                    <tr>
-                                        {% if forloop.first %}
-                                            <td rowspan="{{ time_slots|length }}">{{ day_label }}</td>
-                                        {% endif %}
-                                        <td>{{ slot }}</td>
-                                        {% for class in class_names %}
-                                            {% with day_data=schedule_table|dict_get:day %}
-                                                {% with slot_data=day_data|dict_get:slot %}
-                                                    {% with info=slot_data|dict_get:class %}
-                                                        {% if info %}
-                                                            <td>
-                                                                <span>Ders: {{ info.course }}</span>
-                                                                <span>Derslik: {{ info.classroom }}</span>
-                                                                <span><i>Öğr. Görv: {{ info.instructor }}</i></span>
-                                                            </td>
-                                                        {% else %}
-                                                            <td>-</td>
-                                                        {% endif %}
-                                                    {% endwith %}
+                {% if error_messages %}
+                    {% for error in error_messages %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Gün</th>
+                            <th rowspan="2">Saat</th>
+                            <th colspan="4">Sınıflar</th>
+                        </tr>
+                        <tr>
+                            <th>1. Sınıf</th>
+                            <th>2. Sınıf</th>
+                            <th>3. Sınıf</th>
+                            <th>4. Sınıf</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day, day_label in day_names.items %}
+                            {% for slot in time_slots %}
+                                <tr>
+                                    {% if forloop.first %}
+                                        <td rowspan="{{ time_slots|length }}">{{ day_label }}</td>
+                                    {% endif %}
+                                    <td>{{ slot }}</td>
+                                    {% for class in class_names %}
+                                        {% with day_data=schedule_table|dict_get:day %}
+                                            {% with slot_data=day_data|dict_get:slot %}
+                                                {% with info=slot_data|dict_get:class %}
+                                                    {% if info %}
+                                                        <td>
+                                                            <span>Ders: {{ info.course }}</span>
+                                                            <span>Derslik: {{ info.classroom }}</span>
+                                                            <span><i>Öğr. Görv: {{ info.instructor }}</i></span>
+                                                        </td>
+                                                    {% else %}
+                                                        <td>-</td>
+                                                    {% endif %}
                                                 {% endwith %}
                                             {% endwith %}
-                                        {% endfor %}
-                                    </tr>
-                                {% endfor %}
-                                <tr><td colspan="6"></td></tr>
+                                        {% endwith %}
+                                    {% endfor %}
+                                </tr>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                {% endif %}
+                            <tr><td colspan="6"></td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
                 <form method="POST">
                     {% csrf_token %}
                     <button type="submit">Yeni Ders Programı Oluştur</button>

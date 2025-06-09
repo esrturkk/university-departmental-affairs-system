@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from accounts.models import CustomUser
-from .models import Course, Classroom, CourseSchedule, ExamSchedule, InvigilatorAssignment
+from accounts.models import CustomUser, Student
+from .models import Course, Classroom, CourseSchedule, ExamSchedule, InvigilatorAssignment, ExamSeatingArrangement
 from .forms import CourseForm, ClassroomForm, ExamScheduleForm
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse
 from datetime import time, timedelta, datetime
 from accounts.views import AuthorizationRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -77,6 +77,8 @@ def role_required(allowed_roles):
 
 @role_required(['Bölüm Başkanı', 'Bölüm Sekreteri'])
 def course_schedule_generate(request):
+    error_messages = []
+
     if request.method == 'POST':
         CourseSchedule.objects.all().delete()
 
@@ -85,7 +87,16 @@ def course_schedule_generate(request):
         classrooms = list(Classroom.objects.all())
 
         if len(courses) < MIN_COURSES or len(instructors) < MIN_INSTRUCTORS or len(classrooms) < MIN_CLASSROOMS:
-            return render(request, 'course_schedule_generate.html', {'error': 'Yeterli sayıda ders, öğretim elemanı veya derslik bulunamadı.'})
+            error_messages.append('Yeterli sayıda ders, öğretim elemanı veya derslik bulunamadı.')
+            
+            return render(request, 'course_schedule_generate.html', {
+                'schedule_table': {},
+                'schedule': [],
+                'time_slots': time_slots,
+                'class_names': [],
+                'day_names': day_names,
+                'error_messages': error_messages,
+            })
 
         instructor_schedule = {inst.id: [] for inst in instructors}
         classroom_schedule = {room.id: [] for room in classrooms}
@@ -109,6 +120,8 @@ def course_schedule_generate(request):
             if not instructor:
                 continue
 
+            enrolled_students_count = course.course_students.count()
+
             assigned = False
             random.shuffle(daily_slots)
             random.shuffle(classrooms)
@@ -119,7 +132,10 @@ def course_schedule_generate(request):
 
                 suitable_classroom = None
                 for room in classrooms:
-                    if not is_conflict(classroom_schedule[room.id], day, start, end):
+                    if (
+                        not is_conflict(classroom_schedule[room.id], day, start, end)
+                        and room.classroom_capacity >= enrolled_students_count
+                    ):
                         suitable_classroom = room
                         break
 
@@ -141,11 +157,43 @@ def course_schedule_generate(request):
                 break
 
             if not assigned:
-                return render(request, 'course_schedule_generate.html', {
-                    'error': f'Ders "{course.course_name}" için uygun saat ve derslik bulunamadı.'
-                })
+                error_messages.append(f'Ders "{course.course_name}" için yeterli kapasiteli ve uygun saatli derslik bulunamadı.')
 
-        return redirect('course_schedule_generate')
+        schedules = CourseSchedule.objects.all()
+
+        schedule = []
+        for sc in schedules:
+            schedule.append({
+                'class': sc.course.course_level,
+                'day': sc.day_of_week,
+                'slot': f'{sc.start_time.strftime("%H:%M")}-{sc.end_time.strftime("%H:%M")}',
+                'course': sc.course.course_name,
+                'instructor': sc.course.course_instructor.get_full_name() if sc.course.course_instructor else 'N/A',
+                'classroom': sc.classroom.classroom_name if sc.classroom else 'N/A',
+            })
+
+        schedule_table = {}
+        class_levels = sorted(set(item['class'] for item in schedule))
+
+        for day in DAYS:
+            schedule_table[day] = {}
+            for slot in time_slots:
+                schedule_table[day][slot] = {level: None for level in class_levels}
+
+        for item in schedule:
+            day = item['day']
+            slot = item['slot']
+            class_no = item['class']
+            schedule_table[day][slot][class_no] = item
+            
+        return render(request, 'course_schedule_generate.html', {
+            'schedule_table': schedule_table,
+            'schedule': schedule,
+            'time_slots': time_slots,
+            'class_names': class_levels,
+            'day_names': day_names,
+            'error_messages': error_messages if error_messages else None
+        })
 
     schedules = CourseSchedule.objects.all()
 
@@ -154,7 +202,7 @@ def course_schedule_generate(request):
         schedule.append({
             'class': sc.course.course_level,
             'day': sc.day_of_week,
-            'slot': f'{sc.start_time.strftime('%H:%M')}-{sc.end_time.strftime('%H:%M')}',
+            'slot': f'{sc.start_time.strftime("%H:%M")}-{sc.end_time.strftime("%H:%M")}',
             'course': sc.course.course_name,
             'instructor': sc.course.course_instructor.get_full_name() if sc.course.course_instructor else 'N/A',
             'classroom': sc.classroom.classroom_name if sc.classroom else 'N/A',
@@ -179,7 +227,8 @@ def course_schedule_generate(request):
         'schedule': schedule,
         'time_slots': time_slots,
         'class_names': class_levels,
-        'day_names': day_names
+        'day_names': day_names,
+        'error_messages': error_messages if error_messages else None
     })
 
 @login_required(login_url='home')
@@ -266,28 +315,33 @@ def exam_schedule_generate_view(request):
                 if ExamSchedule.objects.filter(course=course).exists():
                     form.add_error('course', 'Bu ders için zaten bir sınav programı oluşturulmuş.')
                 else:
-                    classroom_conflict = ExamSchedule.objects.filter(
-                        classroom=classroom,
-                        exam_day=exam_day,
-                        start_time__lt=end_time,
-                        end_time__gt=start_time
-                    ).exists()
-
-                    invigilator_conflict = InvigilatorAssignment.objects.filter(
-                        invigilator=invigilator,
-                        exam__exam_day=exam_day,
-                        exam__start_time__lt=end_time,
-                        exam__end_time__gt=start_time
-                    ).exists()
-
-                    if classroom_conflict:
-                        form.add_error('classroom', 'Seçilen derslik bu saatlerde başka bir sınav için kullanılıyor.')
-                    elif invigilator_conflict:
-                        form.add_error('invigilator', 'Seçilen gözetmen bu saatlerde başka bir sınavda görevlidir.')
+                    student_count = course.course_students.count()
+                    
+                    if classroom.classroom_capacity < student_count:
+                        form.add_error('classroom', f'Seçilen derslik kapasitesi ({classroom.classroom_capacity}) öğrenci sayısından ({student_count}) düşüktür.')
                     else:
-                        exam = form.save()
-                        InvigilatorAssignment.objects.create(exam=exam, invigilator=invigilator)
-                        return redirect('exam_schedule')
+                        classroom_conflict = ExamSchedule.objects.filter(
+                            classroom=classroom,
+                            exam_day=exam_day,
+                            start_time__lt=end_time,
+                            end_time__gt=start_time
+                        ).exists()
+
+                        invigilator_conflict = InvigilatorAssignment.objects.filter(
+                            invigilator=invigilator,
+                            exam__exam_day=exam_day,
+                            exam__start_time__lt=end_time,
+                            exam__end_time__gt=start_time
+                        ).exists()
+
+                        if classroom_conflict:
+                            form.add_error('classroom', 'Seçilen derslik bu saatlerde başka bir sınav için kullanılıyor.')
+                        elif invigilator_conflict:
+                            form.add_error('invigilator', 'Seçilen gözetmen bu saatlerde başka bir sınavda görevlidir.')
+                        else:
+                            exam = form.save()
+                            InvigilatorAssignment.objects.create(exam=exam, invigilator=invigilator)
+                            return redirect('exam_schedule')
     else:
         form = ExamScheduleForm()
 
@@ -303,8 +357,8 @@ def exam_schedule_generate_view(request):
             'exam_day': exam.exam_day,
             'start_time': exam.start_time,
             'end_time': exam.end_time,
-            'classroom': exam.classroom.classroom_name if exam.classroom else 'Yok',
-            'invigilator': invigilator.get_full_name() if invigilator else 'Atanmadı',
+            'classroom': exam.classroom.classroom_name,
+            'invigilator': invigilator.get_full_name(),
             'note': exam.note or '',
         })
 
@@ -320,6 +374,70 @@ def exam_schedule_delete(request, exam_id):
     InvigilatorAssignment.objects.filter(exam=exam).delete()
     exam.delete()
     return HttpResponseRedirect(reverse('exam_schedule'))
+
+@login_required(login_url='home')
+def exam_seating(request, exam_id):
+    exam = get_object_or_404(ExamSchedule, id=exam_id)
+    classroom = exam.classroom
+    capacity = classroom.classroom_capacity
+
+    user_role = getattr(request.user, 'role', None)
+    user_role_title = getattr(user_role, 'title', None)
+    is_authorized = user_role_title in ['Bölüm Başkanı', 'Bölüm Sekreteri']
+
+    if request.method == 'POST':
+        if 'generate_seating' in request.POST and is_authorized:
+            ExamSeatingArrangement.objects.filter(exam=exam).delete()
+
+            course_students = exam.course.course_students.all()
+            student_list = list(course_students)
+
+            if len(student_list) > capacity:
+                student_list = student_list[:capacity]
+
+            seat_numbers = list(range(1, capacity + 1))
+            random.shuffle(seat_numbers)
+
+            for idx, student in enumerate(student_list):
+                ExamSeatingArrangement.objects.create(
+                    exam=exam,
+                    classroom=classroom,
+                    student=student,
+                    seat_number=seat_numbers[idx]
+                )
+
+        elif 'pdf' in request.POST:
+            seating = ExamSeatingArrangement.objects.filter(exam=exam).select_related('student').order_by('seat_number')
+            assignments = InvigilatorAssignment.objects.select_related('invigilator', 'exam').filter(exam=exam)
+            invigilator = next((a.invigilator for a in assignments), None)
+            taken_seat_count = seating.count()
+            template = get_template('exam_seating_pdf.html')
+            html = template.render({
+                'exam': exam,
+                'seating': seating,
+                'classroom': classroom,
+                'invigilator': invigilator,
+                'taken_seat_count': taken_seat_count,
+            })
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="sinav_oturma_duzeni.pdf"'
+            pisa_status = pisa.CreatePDF(html, dest=response)
+            if not pisa_status.err:
+                return response
+
+    seating = ExamSeatingArrangement.objects.filter(exam=exam).select_related('student').order_by('seat_number')
+    assignments = InvigilatorAssignment.objects.select_related('invigilator', 'exam').filter(exam=exam)
+    invigilator = next((a.invigilator for a in assignments), None)
+    taken_seat_count = seating.count()
+
+    return render(request, 'exam_seating.html', {
+        'exam': exam,
+        'seating': seating,
+        'classroom': classroom,
+        'invigilator': invigilator,
+        'taken_seat_count': taken_seat_count,
+        'is_authorized': is_authorized,
+    })
 
 class ClassroomListView(LoginRequiredMixin, ListView):
     model = Classroom

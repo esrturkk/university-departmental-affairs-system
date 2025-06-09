@@ -1,35 +1,13 @@
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 from .models import Course, Classroom
-from accounts.models import CustomUser
+from accounts.models import CustomUser, Role
 import random
 
 @receiver(post_migrate)
-def create_default_lessons(sender, **kwargs):
-    instructor_names = [
-        ('Ahmet Yılmaz', 'ahmet.yilmaz@example.com'),
-        ('Ayşe Kara', 'ayse.kara@example.com'),
-        ('Mehmet Çelik', 'mehmet.celik@example.com'),
-        ('Ali Öztürk', 'ali.ozturk@example.com'),
-        ('Zeynep Aydın', 'zeynep.aydin@example.com'),
-        ('Fatma Demir', 'fatma.demir@example.com'),
-        ('Emre Kılıç', 'emre.kilic@example.com'),
-        ('Sedef Sarı', 'sedef.sari@example.com'),
-        ('Hüseyin Aslan', 'huseyin.aslan@example.com'),
-        ('Merve Yıldız', 'merve.yildiz@example.com')
-    ]
-    for full_name, email in instructor_names:
-        CustomUser.objects.get_or_create(
-            username=email.split('@')[0],
-            defaults={
-                'email': email,
-                'first_name': full_name.split(' ')[0],
-                'last_name': full_name.split(' ')[1],
-                'role_id': 3
-            }
-        )
-
-    instructors = list(CustomUser.objects.filter(role_id__in=[1, 3]))
+def create_default_courses_classrooms(sender, **kwargs):
+    roles = Role.objects.filter(title__in=['Bölüm Başkanı', 'Öğretim Elemanı'])
+    instructors = list(CustomUser.objects.filter(role__in=roles))
 
     course_names = [
         ('Matematik 1', 'MATH1'), ('Fizik 1', 'PHYS1'), ('Kimya 1', 'CHEM1'), 
@@ -67,6 +45,6 @@ def create_default_lessons(sender, **kwargs):
             classroom_code=classroom_code,
             defaults={
                 'classroom_name': classroom_name,
-                'classroom_capacity': random.choice([30, 40, 50, 60])
+                'classroom_capacity': random.choice([10, 20, 30, 40])
             }
         )

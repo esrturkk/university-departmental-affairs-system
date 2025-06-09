@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load schedule_extras %}
 
-    {% block title %}Derslik Detayı - Üniversite Bölüm İşleri{% endblock %}
-    {% block css %}<link rel="stylesheet" href="{% static 'css/detail.css' %}" type="text/css">{% endblock %}
+    {% block title %}Sınav Oturma Düzeni - Üniversite Bölüm İşleri{% endblock %}
+    {% block css %}<link rel="stylesheet" href="{% static 'css/schedule.css' %}" type="text/css">{% endblock %}
 
     {% block content %}
         <header>
@@ -83,39 +84,47 @@
         <article>
             <div class="content">
                 <div class="info">
-                    <h2>{{ classroom.classroom_code }} Kodlu Derslik Künyesi</h2>
-                    <p><strong>Ad:</strong> {{ classroom.classroom_name }}</p>
-                    <p><strong>Kod:</strong> {{ classroom.classroom_code }}</p>
-                    <p><strong>Kapasite:</strong> {{ classroom.classroom_capacity }}</p>
+                    <h2>Sınav: {{ exam.course }}</h2>
+                    <p><strong>Gün:</strong> {{ exam.exam_day }}</p>
+                    <p><strong>Saat:</strong> {{ exam.start_time }} - {{ exam.end_time }}</p>
+                    <p><strong>Derslik:</strong> {{ classroom }}</p>
+                    <p><strong>Sandalye Doluluğu:</strong> {{ taken_seat_count }} / {{ classroom.classroom_capacity }}</p>
+                    <p><strong>Gözetmen:</strong> {{ invigilator }}</p>
                 </div>
                 <div class="status">
-                    <h2>Bu Derslikte Verilen Dersler</h2>
+                    <h2>Oturma Düzeni</h2>
+                    {% if is_authorized %}
+                        <form method="POST">
+                            {% csrf_token %}
+                            <button type="submit" name="generate_seating">Oturma Düzeni Oluştur</button>
+                        </form>
+                    {% endif %}
                     <table>
                         <thead>
                             <tr>
-                                <th>Ders</th>
-                                <th>Sınıf</th>
-                                <th>Gün</th>
-                                <th>Saat</th>
-                                <th>Öğretim Elemanı</th>
+                                <th>Oturma No</th>
+                                <th>Öğrenci No</th>
+                                <th>Öğrenci Adı</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% if classroom_lessons %}
-                                {% for lesson in classroom_lessons %}
-                                    <tr>
-                                        <td>{{ lesson.course.course_name }}</td>
-                                        <td>{{ lesson.course.course_level }}</td>
-                                        <td>{{ lesson.get_day_of_week_display }}</td>
-                                        <td>{{ lesson.start_time|time:"H:i" }} - {{ lesson.end_time|time:"H:i" }}</td>
-                                        <td>{{ lesson.course.course_instructor.get_full_name }}</td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr><td colspan="4">Bu derslikte henüz ders bulunmamaktadır.</td></tr>
-                            {% endif %}
+                            {% for seat in seating %}
+                                <tr>
+                                    <td>{{ seat.seat_number }}</td>
+                                    <td>{{ seat.student.student_no }}</td>
+                                    <td>{{ seat.student.first_name }} {{ seat.student.last_name }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="3">Oturma düzeni boş.</td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="submit" name="pdf">PDF formatında görüntüle</button>
+                    </form>
                 </div>
             </div>
         </article>

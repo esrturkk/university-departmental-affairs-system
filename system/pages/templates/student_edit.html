@@ -60,7 +60,7 @@
         </nav>
         <article>
             <div class="content">
-                <h2>Öğrenciyi Düzenle</h2>
+                <h2>{{ student.student_no }} Numaralı Öğrenciyi Düzenle</h2>
                 <form action="" method="post">{% csrf_token %}
                     <table>
                         {% for field in form %}

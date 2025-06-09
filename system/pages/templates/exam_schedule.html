@@ -35,7 +35,9 @@
                     </li>
                     <li class="dropdown"><a href="#">Sınavlar</a>
                         <ul class="dropdown-content">
-                            <li><a href="{% url 'exam_schedule' %}">Sınav Programı</a></li>
+                            {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' or user.role.title == 'Öğretim Elemanı' %}
+                                <li><a href="{% url 'exam_schedule' %}">Sınav Programı</a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li class="dropdown"><a href="#">Derslikler</a>
@@ -118,6 +120,7 @@
                                 <td>{{ exam.invigilator }}</td>
                                 <td>{{ exam.note }}</td>
                                 <td>
+                                    <a href="{% url 'exam_seating' exam.id %}">Görüntüle</a>
                                 {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
                                     <form method="POST" action="{% url 'exam_schedule_delete' exam.id %}" onsubmit="return confirm('Sınav silinecek, emin misiniz?');">
                                         {% csrf_token %}
