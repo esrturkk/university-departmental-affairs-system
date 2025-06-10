@@ -72,7 +72,6 @@ class CourseSchedule(models.Model):
     day_of_week = models.CharField(max_length=3, choices=DAYS_OF_WEEK, verbose_name='Günler')
     start_time = models.TimeField(verbose_name='Başlama Saati')
     end_time = models.TimeField(verbose_name='Bitiş Saati')
-    note = models.TextField(blank=True, null=True, verbose_name='Açıklama')
 
     def __str__(self):
         return f'{self.course.course_name} | {self.get_day_of_week_display()} | {self.start_time}'
@@ -81,13 +80,24 @@ class CourseSchedule(models.Model):
         verbose_name = 'ders programı'
         verbose_name_plural = 'ders programları'
 
+class CourseScheduleNote(models.Model):
+    author = models.OneToOneField(CustomUser, on_delete=models.CASCADE, verbose_name='Yazar')
+    note = models.TextField(blank=True, null=True, verbose_name='Not')
+
+    class Meta:
+        verbose_name = 'ders programı notu'
+        verbose_name_plural = 'ders programı notları'
+
+    def __str__(self):
+        return f'{self.author.get_full_name()} için Ders Programı Notu'
+
 class ExamSchedule(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Ders')
     classroom = models.ForeignKey(Classroom, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Derslik')
     exam_day = models.DateField(verbose_name='Sınav Günü')
     start_time = models.TimeField(verbose_name='Başlama Saati')
     end_time = models.TimeField(verbose_name='Bitiş Saati')
-    note = models.TextField(blank=True, null=True, verbose_name='Açıklama')
+    note = models.TextField(blank=True, null=True, verbose_name='Not')
 
     def __str__(self):
         return f'{self.course.course_name} | {self.exam_day}'

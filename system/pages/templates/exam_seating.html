@@ -90,13 +90,20 @@
                     <p><strong>Derslik:</strong> {{ classroom }}</p>
                     <p><strong>Sandalye Doluluğu:</strong> {{ taken_seat_count }} / {{ classroom.classroom_capacity }}</p>
                     <p><strong>Gözetmen:</strong> {{ invigilator }}</p>
+                    <p><strong>Not:</strong>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <textarea name="note" rows="3" placeholder="Not giriniz...">{{ exam.note }}</textarea>
+                            <button type="submit" name="update_note">Güncelle</button>
+                        </form>
+                    </p>
                 </div>
                 <div class="status">
                     <h2>Oturma Düzeni</h2>
                     {% if is_authorized %}
                         <form method="POST">
                             {% csrf_token %}
-                            <button type="submit" name="generate_seating">Oturma Düzeni Oluştur</button>
+                            <button type="submit" name="arrange_seating">Oturma Düzeni Oluştur</button>
                         </form>
                     {% endif %}
                     <table>
@@ -123,7 +130,7 @@
                     </table>
                     <form method="POST">
                         {% csrf_token %}
-                        <button type="submit" name="pdf">PDF formatında görüntüle</button>
+                        <button type="submit" name="view_pdf">PDF formatında görüntüle</button>
                     </form>
                 </div>
             </div>

@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from accounts.models import CustomUser, Student
-from .models import Course, Classroom, CourseSchedule, ExamSchedule, InvigilatorAssignment, ExamSeatingArrangement
+from accounts.models import CustomUser
+from .models import Course, Classroom, CourseSchedule, CourseScheduleNote, ExamSchedule, InvigilatorAssignment, ExamSeatingArrangement
 from .forms import CourseForm, ClassroomForm, ExamScheduleForm
 from django.http import HttpResponse
 from datetime import time, timedelta, datetime
@@ -238,12 +238,10 @@ def course_schedule_view(request, user_id=None):
     if user_id is None:
         selected_user = viewer
     else:
-        try:
-            selected_user = CustomUser.objects.get(id=user_id)
-        except CustomUser.DoesNotExist:
-            return HttpResponse('Kullanıcı bulunamadı.', status=404)
+        selected_user = CustomUser.objects.get(id=user_id)
 
     schedules = CourseSchedule.objects.filter(course__course_instructor=selected_user)
+    note = CourseScheduleNote.objects.filter(author=selected_user).first()
 
     schedule = []
     for sc in schedules:
@@ -275,20 +273,31 @@ def course_schedule_view(request, user_id=None):
         'time_slots': time_slots,
         'class_names': class_levels,
         'day_names': day_names,
+        'note': note,
         'user': viewer,
         'selected_user': selected_user,
     }
 
     if request.method == 'POST':
-        template = get_template('course_schedule_pdf.html')
-        html = template.render(context)
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="ders_programi.pdf"'
-        pisa_status = pisa.CreatePDF(html, dest=response)
+        if 'update_note' in request.POST:
+            note_text = request.POST.get('note', '').strip()
+            
+            note_obj, created = CourseScheduleNote.objects.get_or_create(author=selected_user)
+            note_obj.note = note_text
+            note_obj.save()
+            
+            return redirect('course_schedule_view', user_id=selected_user.id)
 
-        if pisa_status.err:
-            return HttpResponse('PDF oluşturulurken hata oluştu.')
-        return response
+        elif 'view_pdf' in request.POST:
+            template = get_template('course_schedule_pdf.html')
+            html = template.render(context)
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="ders_programi.pdf"'
+            pisa_status = pisa.CreatePDF(html, dest=response)
+
+            if pisa_status.err:
+                return HttpResponse('PDF oluşturulurken hata oluştu.')
+            return response
 
     return render(request, 'course_schedule_view.html', context)
 
@@ -386,7 +395,13 @@ def exam_seating(request, exam_id):
     is_authorized = user_role_title in ['Bölüm Başkanı', 'Bölüm Sekreteri']
 
     if request.method == 'POST':
-        if 'generate_seating' in request.POST and is_authorized:
+        if 'update_note' in request.POST:
+            note = request.POST.get('note', '').strip()
+            exam.note = note
+            exam.save()
+            return redirect('exam_seating', exam_id=exam.id)
+        
+        elif 'arrange_seating' in request.POST and is_authorized:
             ExamSeatingArrangement.objects.filter(exam=exam).delete()
 
             course_students = exam.course.course_students.all()
@@ -405,8 +420,8 @@ def exam_seating(request, exam_id):
                     student=student,
                     seat_number=seat_numbers[idx]
                 )
-
-        elif 'pdf' in request.POST:
+        
+        elif 'view_pdf' in request.POST:
             seating = ExamSeatingArrangement.objects.filter(exam=exam).select_related('student').order_by('seat_number')
             assignments = InvigilatorAssignment.objects.select_related('invigilator', 'exam').filter(exam=exam)
             invigilator = next((a.invigilator for a in assignments), None)

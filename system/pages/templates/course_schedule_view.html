@@ -126,8 +126,13 @@
                 {% endif %}
                 <form method="POST">
                     {% csrf_token %}
-                    <button type="submit">PDF formatında görüntüle</button>
-                </form>                
+                    <textarea name="note" rows="3" placeholder="Not giriniz...">{{ note.note }}</textarea>
+                    <button type="submit" name="update_note">Güncelle</button>
+                </form>
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="view_pdf">PDF formatında görüntüle</button>
+                </form>
             </div>
         </article>
     {% endblock %}
