@@ -60,9 +60,9 @@ time_slots = [
     '17:00-17:50'
 ]
 
-MIN_COURSES = 10
-MIN_INSTRUCTORS = 5
-MIN_CLASSROOMS = 3
+MIN_COURSES = 5
+MIN_INSTRUCTORS = 2
+MIN_CLASSROOMS = 2
 
 def role_required(allowed_roles):
     def decorator(view_func):
@@ -186,14 +186,17 @@ def course_schedule_generate(request):
             class_no = item['class']
             schedule_table[day][slot][class_no] = item
             
-        return render(request, 'course_schedule_generate.html', {
-            'schedule_table': schedule_table,
-            'schedule': schedule,
-            'time_slots': time_slots,
-            'class_names': class_levels,
-            'day_names': day_names,
-            'error_messages': error_messages if error_messages else None
-        })
+        if error_messages:
+            return render(request, 'course_schedule_generate.html', {
+                'schedule_table': schedule_table,
+                'schedule': schedule,
+                'time_slots': time_slots,
+                'class_names': class_levels,
+                'day_names': day_names,
+                'error_messages': error_messages,
+            })
+
+        return redirect('course_schedule_generate')
 
     schedules = CourseSchedule.objects.all()
 
@@ -420,6 +423,8 @@ def exam_seating(request, exam_id):
                     student=student,
                     seat_number=seat_numbers[idx]
                 )
+            
+            return redirect('exam_seating', exam_id=exam.id)
         
         elif 'view_pdf' in request.POST:
             seating = ExamSeatingArrangement.objects.filter(exam=exam).select_related('student').order_by('seat_number')

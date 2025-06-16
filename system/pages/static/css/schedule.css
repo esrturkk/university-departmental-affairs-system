@@ -16,6 +16,11 @@
         padding:20px;
         margin:20px;
     }
+
+    .content table
+    {
+        min-width:900px;
+    }
 }
 
 @media only screen and (max-width:900px) /*for tablet and phone*/
@@ -35,6 +40,11 @@
     {
         padding:10px;
         margin:10px;
+    }
+
+    .content table
+    {
+        min-width:300px;
     }
 }
 
@@ -220,7 +230,6 @@ article
 .content table
 {
     width:max-content;
-    min-width:700px;
     border-collapse:collapse;
     box-shadow:0 2px 8px rgba(0, 0, 0, 0.1);
     table-layout:fixed;
@@ -294,7 +303,7 @@ article
     box-shadow:0 0 6px rgba(39, 174, 96, 0.6);
 }
 
-.content table td a, .content form button
+.content form button
 {
     width:100%;
     max-width:200px;
@@ -310,15 +319,61 @@ article
     margin:5px;
 }
 
-.content table td a:hover, .content form button:hover
+.content form button:hover
 {
     background-color:#1abc9c;
     transform:scale(1.05);
 }
 
-.content table td a:active, .content form button:active
+.content form button:active
 {
     transform:scale(0.95);
+}
+
+.seating
+{
+    display:grid;
+    grid-template-columns:repeat(8, 1fr);
+    gap:1px;
+    margin:10px;
+}
+
+.seat
+{
+    background-color:#c8e6c9;
+    text-align:center;
+    cursor:default;
+    border:1px solid #555;
+    border-radius:5px;
+    padding:8px;
+}
+
+.seat.occupied {
+    background-color:#ffccbc;
+    font-weight:bold;
+}
+
+.seat-number
+{
+    color:#333;
+    font-size:0.9em;
+    margin-bottom:4px;
+}
+
+.student-name
+{
+    font-size:0.75em;
+}
+
+.student-name.empty-seat
+{
+    color:#999;
+    font-style:italic;
+}
+
+.seat:nth-child(2n)
+{
+    margin-right:10px;
 }
 
 

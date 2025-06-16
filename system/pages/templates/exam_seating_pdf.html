@@ -34,6 +34,24 @@
                     text-align:center;
                 }
 
+                .seat-cell
+                {
+                    text-align:center;
+                    padding:8px;
+                }
+
+                .occupied
+                {
+                    background-color:#ffccbc;
+                    font-weight:bold;
+                }
+
+                .empty
+                {
+                    background-color:#c8e6c9;
+                    font-style:italic;
+                }
+
                 @media print
                 {
                     table
@@ -69,9 +87,32 @@
                     <div class="status">
                         <h2>Oturma Düzeni</h2>
                         <table>
+                            <tbody>
+                                {% for seat_num in classroom.classroom_capacity|make_range %}
+                                    {% if forloop.first or forloop.counter0|divisibleby:8 %}
+                                        <tr>
+                                    {% endif %}
+                                    {% with seating|get_seat:seat_num as seat %}
+                                        <td class="seat-cell {% if seat %}occupied{% else %}empty{% endif %}">
+                                            <div>{{ seat_num }}</div>
+                                            {% if seat %}
+                                                <div>{{ seat.student.first_name }} {{ seat.student.last_name }}</div>
+                                            {% else %}
+                                                <div>Boş</div>
+                                            {% endif %}
+                                        </td>
+                                    {% endwith %}
+                                    {% if forloop.counter|divisibleby:8 or forloop.last %}
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <h2>Sınıf Listesi</h2>
+                        <table>
                             <thead>
                                 <tr>
-                                    <th>Oturma No</th>
+                                    <th>Sıra No</th>
                                     <th>Öğrenci No</th>
                                     <th>Öğrenci Adı</th>
                                 </tr>

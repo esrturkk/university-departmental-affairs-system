@@ -17,7 +17,7 @@
         margin:20px;
     }
 
-    table th, table td
+    .content table th, .content table td
     {
         font-size:1rem;
         padding:12px;
@@ -43,12 +43,12 @@
         margin:10px;
     }
 
-    table
+    .content table
     {
         display:block;
     }
 
-    table th, table td
+    .content table th, .content table td
     {
         font-size:0.8rem;
         padding:8px;

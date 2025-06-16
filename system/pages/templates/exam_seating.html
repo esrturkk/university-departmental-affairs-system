@@ -100,16 +100,31 @@
                 </div>
                 <div class="status">
                     <h2>Oturma Düzeni</h2>
+                    <div class="seating">
+                        {% for seat_num in classroom.classroom_capacity|make_range %}
+                            {% with seating|get_seat:seat_num as seat %}
+                                <div class="seat {% if seat %}occupied{% else %}empty{% endif %}">
+                                    <div class="seat-number">{{ seat_num }}</div>
+                                    {% if seat %}
+                                        <div class="student-name">{{ seat.student.first_name }} {{ seat.student.last_name }}</div>
+                                    {% else %}
+                                        <div class="student-name empty-seat">Boş</div>
+                                    {% endif %}
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
                     {% if is_authorized %}
                         <form method="POST">
                             {% csrf_token %}
                             <button type="submit" name="arrange_seating">Oturma Düzeni Oluştur</button>
                         </form>
                     {% endif %}
+                    <h2>Sınıf Listesi</h2>
                     <table>
                         <thead>
                             <tr>
-                                <th>Oturma No</th>
+                                <th>Sıra No</th>
                                 <th>Öğrenci No</th>
                                 <th>Öğrenci Adı</th>
                             </tr>
