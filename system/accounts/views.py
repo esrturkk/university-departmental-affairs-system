@@ -103,6 +103,13 @@ class StaffCreateView(AuthorizationRequiredMixin, CreateView):
 
     def form_valid(self, form):
         user = form.save(commit=False)
+
+        raw_password = form.cleaned_data.get('password')
+        if raw_password:
+            user.set_password(raw_password)
+        else:
+            pass
+
         user.save()
         return super().form_valid(form)
     
@@ -125,6 +132,13 @@ class StaffUpdateView(AuthorizationRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         user = form.save(commit=False)
+
+        raw_password = form.cleaned_data.get('password')
+        if raw_password and raw_password.strip():
+            user.set_password(raw_password)
+        else:
+            user.password = self.get_object().password
+
         user.save()
         return super().form_valid(form)
 

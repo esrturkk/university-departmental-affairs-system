@@ -3,16 +3,26 @@ from .models import CustomUser, Student
 from lessons.models import Course
 
 class StaffForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput,
+        required=False,
+        label='Şifre'
+    )
+    
     class Meta:
         model = CustomUser
-        fields = ['username', 'first_name', 'last_name', 'email', 'role']
+        fields = ['username', 'first_name', 'last_name', 'email', 'role', 'password']
         labels = {
-            'username': 'Personel ID',
+            'username': 'Personel Kimliği',
             'first_name': 'Ad',
             'last_name': 'Soyad',
             'email': 'E-posta',
-            'role': 'Görev'
+            'role': 'Görev',
         }
+
+    def __init__(self, *args, **kwargs):
+        super(StaffForm, self).__init__(*args, **kwargs)
+        self.fields['password'].initial = ''
 
 class StudentForm(forms.ModelForm):
     courses = forms.ModelMultipleChoiceField(
