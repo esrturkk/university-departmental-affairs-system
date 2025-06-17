@@ -11,11 +11,90 @@
         {% block css %}{% endblock %}
     </head>
     <body id="body">
-        {% block content %}
+        {% block header_nav %}
+            <header>
+                <div class="logo">
+                    <a href="{% url 'dashboard' %}"><img id="logo" src="{% static 'media/kou.png' %}" width="75px" height="75px" title="logo" alt="logo"></a>
+                </div>
+                <div class="heading">
+                    <h1>Üniversite Bölüm İşleri Sistemi</h1>
+                    <h2>{{user.role.type}} Personel - {{user.role.title}}</h2>
+                </div>
+                <div class="user">
+                    <h1>{{user.first_name}} {{user.last_name}}</h1>
+                </div>
+            </header>
+            <nav>
+                <div class="menu">
+                    <ul>
+                        <li><a href="{% url 'dashboard' %}">Gösterge Paneli</a></li>
+                        <li class="dropdown"><a href="#">Dersler</a>
+                            <ul class="dropdown-content">
+                                {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                                    <li><a href="{% url 'course_new' %}">Ders Ekle</a></li>
+                                    <li><a href="{% url 'courses' %}">Ders Listesi</a></li>
+                                    <li><a href="{% url 'course_schedule_generate' %}">Ders Programı Oluştur</a></li>
+                                {% elif user.role.title == 'Öğretim Elemanı' %}
+                                    <li><a href="{% url 'course_schedule_view' %}">Ders Programı</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li class="dropdown"><a href="#">Sınavlar</a>
+                            <ul class="dropdown-content">
+                                {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' or user.role.title == 'Öğretim Elemanı' %}
+                                    <li><a href="{% url 'exam_schedule' %}">Sınav Programı</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li class="dropdown"><a href="#">Derslikler</a>
+                            <ul class="dropdown-content">
+                                {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                                    <li><a href="{% url 'classroom_new' %}">Derslik Ekle</a></li>
+                                    <li><a href="{% url 'classrooms' %}">Derslik Listesi</a></li>
+                                {% elif user.role.title == 'Öğretim Elemanı' %}
+                                    <li><a href="{% url 'classrooms' %}">Derslik Listesi</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                            <li class="dropdown"><a href="#">Personeller</a>
+                                <ul class="dropdown-content">
+                                    <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>
+                                    <li><a href="{% url 'staff' %}">Personel Listesi</a></li>
+                                </ul>
+                            </li>                
+                        {% elif user.role.title == 'Öğretim Elemanı' %}
+                            <li class="dropdown"><a href="#">Personel</a>
+                                <ul class="dropdown-content">
+                                    <li><a href="{% url 'staff_detail' pk=request.user.pk %}">Personel Bilgisi</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        <li class="dropdown"><a href="#">Öğrenciler</a>
+                            <ul class="dropdown-content">
+                                {% if user.role.title == 'Bölüm Başkanı' or user.role.title == 'Bölüm Sekreteri' %}
+                                    <li><a href="{% url 'student_new' %}">Öğrenci Ekle</a></li>
+                                    <li><a href="{% url 'students' %}">Öğrenci Listesi</a></li>
+                                {% elif user.role.title == 'Öğretim Elemanı' %}
+                                    <li><a href="{% url 'students' %}">Öğrenci Listesi</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li><form action="{% url 'logout' %}" method="post">{% csrf_token %}
+                            <button type="submit">Çıkış</button>
+                        </form>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         {% endblock %}
-        <footer>
-            <div class="footer" id="top"></div>
-            <div class="footer" id="bottom">© 2025, Kocaeli Universitesi Yazılım Mühendisliği'ndeki birkaç öğrenci tarafından ❤️ ile tasarlanmıştır.</div>
-        </footer>
+        {% block article %}
+        {% endblock %}
+        {% block footer %}
+            <footer>
+                <div class="footer" id="top"></div>
+                <div class="footer" id="bottom">© 2025, Kocaeli Universitesi Yazılım Mühendisliği'ndeki birkaç öğrenci tarafından ❤️ ile tasarlanmıştır.</div>
+            </footer>
+        {% endblock %}
     </body>
 </html>

@@ -4,60 +4,7 @@
     {% block title %}Öğrenciyi Düzenle - Üniversite Bölüm İşleri{% endblock %}
     {% block css %}<link rel="stylesheet" href="{% static 'css/edit.css' %}" type="text/css">{% endblock %}
 
-    {% block content %}
-        <header>
-            <div class="logo">
-                <a href="{% url 'dashboard' %}"><img id="logo" src="{% static 'media/kou.png' %}" width="75px" height="75px" title="logo" alt="logo"></a>
-            </div>
-            <div class="heading">
-                <h1>Üniversite Bölüm İşleri Sistemi</h1>
-                <h2>{{user.role.type}} Personel - {{user.role.title}}</h2>
-            </div>
-            <div class="user">
-                <h1>{{user.first_name}} {{user.last_name}}</h1>
-            </div>
-        </header>
-        <nav>
-            <div class="menu">
-                <ul>
-                    <li><a href="{% url 'dashboard' %}">Gösterge Paneli</a></li>
-                    <li class="dropdown"><a href="#">Dersler</a>
-                        <ul class="dropdown-content">
-                            <li><a href="{% url 'course_new' %}">Ders Ekle</a></li>
-                            <li><a href="{% url 'courses' %}">Ders Listesi</a></li>
-                            <li><a href="{% url 'course_schedule_generate' %}">Ders Programı Oluştur</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown"><a href="#">Sınavlar</a>
-                        <ul class="dropdown-content">
-                            <li><a href="{% url 'exam_schedule' %}">Sınav Programı</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown"><a href="#">Derslikler</a>
-                        <ul class="dropdown-content">
-                            <li><a href="{% url 'classroom_new' %}">Derslik Ekle</a></li>
-                            <li><a href="{% url 'classrooms' %}">Derslik Listesi</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown"><a href="#">Personeller</a>
-                        <ul class="dropdown-content">
-                            <li><a href="{% url 'staff_new' %}">Personel Ekle</a></li>
-                            <li><a href="{% url 'staff' %}">Personel Listesi</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown"><a href="#">Öğrenciler</a>
-                        <ul class="dropdown-content">
-                            <li><a href="{% url 'student_new' %}">Öğrenci Ekle</a></li>
-                            <li><a href="{% url 'students' %}">Öğrenci Listesi</a></li>
-                        </ul>
-                    </li>
-                    <li><form action="{% url 'logout' %}" method="post">{% csrf_token %}
-                        <button type="submit">Çıkış</button>
-                    </form>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+    {% block article %}
         <article>
             <div class="content">
                 <h2>{{ student.student_no }} Numaralı Öğrenciyi Düzenle</h2>
